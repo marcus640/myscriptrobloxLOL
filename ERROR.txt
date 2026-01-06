@@ -10,6 +10,13 @@ local _G_Active = true
 local espEnabled = false
 local noclipEnabled = false
 
+-- Функція для виконання команд в Infinite Yield
+local function RunIYCommand(cmd)
+    local iy = loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+    task.wait(0.5) -- чекаємо завантаження
+    game:GetService("Players").LocalPlayer.Chatted:Fire(";"..cmd)
+end
+
 -- Створення GUI
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "DarkLauncherFinal"
@@ -64,7 +71,7 @@ local Scroll = Instance.new("ScrollingFrame")
 Scroll.Size = UDim2.new(1, -10, 1, -50)
 Scroll.Position = UDim2.new(0, 5, 0, 45)
 Scroll.BackgroundTransparency = 1
-Scroll.CanvasSize = UDim2.new(0, 0, 0, 350)
+Scroll.CanvasSize = UDim2.new(0, 0, 0, 450) -- Збільшив під нові кнопки
 Scroll.ScrollBarThickness = 4
 Scroll.Parent = MainFrame
 
@@ -87,12 +94,28 @@ end
 
 -- === КНОПКИ ===
 
--- 1. Новий Fly (ItzXery)
+-- 1. WalkFly (через Infinite Yield)
+CreateBtn("👟 WalkFly (IY)", function()
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+    task.wait(0.5)
+    game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(";walkfly", "All")
+    -- Якщо в грі старий чат, використовуємо альтернативу:
+    Players:Chat(";walkfly")
+end)
+
+-- 2. Spin 10 (через Infinite Yield)
+CreateBtn("🌀 Spin 10 (IY)", function()
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+    task.wait(0.5)
+    Players:Chat(";spin 10")
+end)
+
+-- 3. Fly Gui (ItzXery)
 CreateBtn("🕊️ Fly Gui", function()
     loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Fly-Gui-By-ItzXery-67078"))()
 end)
 
--- 2. TP Tool
+-- 4. TP Tool
 CreateBtn("📍 Get TP Tool", function()
     local mouse = LP:GetMouse()
     local tool = Instance.new("Tool")
@@ -104,7 +127,7 @@ CreateBtn("📍 Get TP Tool", function()
     tool.Parent = LP.Backpack
 end)
 
--- 3. ESP
+-- 5. ESP
 CreateBtn("👁️ ESP (Wallhack)", function()
     espEnabled = not espEnabled
     task.spawn(function()
@@ -123,17 +146,17 @@ CreateBtn("👁️ ESP (Wallhack)", function()
     end)
 end)
 
--- 4. Noclip
+-- 6. Noclip
 CreateBtn("👻 Noclip", function()
     noclipEnabled = not noclipEnabled
 end)
 
--- 5. Infinite Yield
+-- 7. Infinite Yield (Просто запуск)
 CreateBtn("🚀 Admin (Inf Yield)", function()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
 end)
 
--- 6. Inf Jump
+-- 8. Inf Jump
 CreateBtn("🦘 Inf Jump", function()
     local connection
     connection = UserInputService.JumpRequest:Connect(function()
