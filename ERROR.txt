@@ -5,94 +5,119 @@ local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local LP = Players.LocalPlayer
 
--- Створення головного GUI
+-- Головний GUI
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "DarkLauncherUI"
-
-if gethui then
-    ScreenGui.Parent = gethui()
-else
-    ScreenGui.Parent = CoreGui
-end
+ScreenGui.Name = "DarkLauncherV2"
+ScreenGui.Parent = (gethui and gethui()) or CoreGui
 
 -- Головна рамка
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 300, 0, 220) -- Трохи збільшив висоту для дод. кнопок
-MainFrame.Position = UDim2.new(0.5, -150, 0.5, -110)
+MainFrame.Size = UDim2.new(0, 300, 0, 250)
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -125)
 MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
 MainFrame.Draggable = true
 MainFrame.Parent = ScreenGui
-
-local MainCorner = Instance.new("UICorner")
-MainCorner.CornerRadius = UDim.new(0, 12)
-MainCorner.Parent = MainFrame
+Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 12)
 
 -- Заголовок
 local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, 0, 0, 40)
 Title.BackgroundTransparency = 1
-Title.Text = "DARK LAUNCHER"
+Title.Text = "DARK LAUNCHER V2"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 18
 Title.Parent = MainFrame
 
--- Лінія
-local Line = Instance.new("Frame")
-Line.Size = UDim2.new(1, -20, 0, 1)
-Line.Position = UDim2.new(0, 10, 0, 40)
-Line.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-Line.BorderSizePixel = 0
-Line.Parent = MainFrame
+-- Список з прокруткою (ScrollingFrame)
+local Scroll = Instance.new("ScrollingFrame")
+Scroll.Size = UDim2.new(1, -10, 1, -50)
+Scroll.Position = UDim2.new(0, 5, 0, 45)
+Scroll.BackgroundTransparency = 1
+Scroll.CanvasSize = UDim2.new(0, 0, 0, 400) -- Розмір області для кнопок
+Scroll.ScrollBarThickness = 4
+Scroll.Parent = MainFrame
 
--- Функція для кнопок
-local function CreateButton(name, pos, callback)
+local ListLayout = Instance.new("UIListLayout")
+ListLayout.Parent = Scroll
+ListLayout.Padding = UDim.new(0, 8)
+ListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+
+-- Функція створення кнопок
+local function CreateBtn(name, callback)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0.9, 0, 0, 35)
-    btn.Position = pos
+    btn.Size = UDim2.new(0.9, 0, 0, 40)
     btn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     btn.Text = name
     btn.TextColor3 = Color3.fromRGB(255, 255, 255)
     btn.Font = Enum.Font.GothamSemibold
-    btn.TextSize = 14
-    btn.Parent = MainFrame
-    
-    local Corner = Instance.new("UICorner")
-    Corner.CornerRadius = UDim.new(0, 6)
-    Corner.Parent = btn
-
+    btn.Parent = Scroll
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
     btn.MouseButton1Click:Connect(callback)
 end
 
 -- === КНОПКИ ===
 
--- 1. Infinite Yield
-CreateButton("🚀 ADMIN (Infinite Yield)", UDim2.new(0.05, 0, 0.25, 0), function()
+-- 1. TP Tool (Інструмент для телепорту)
+CreateBtn("📍 Get TP Tool", function()
+    local mouse = LP:GetMouse()
+    local tool = Instance.new("Tool")
+    tool.RequiresHandle = false
+    tool.Name = "TP Tool"
+    tool.Activated:Connect(function()
+        local pos = mouse.Hit.p
+        LP.Character:MoveTo(pos + Vector3.new(0, 3, 0))
+    end)
+    tool.Parent = LP.Backpack
+end)
+
+-- 2. ESP (Бачити гравців)
+local espEnabled = false
+CreateBtn("👁️ ESP (Wallhack)", function()
+    espEnabled = not espEnabled
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= LP and p.Character then
+            local highlight = p.Character:FindFirstChild("DarkESP")
+            if espEnabled then
+                if not highlight then
+                    highlight = Instance.new("Highlight")
+                    highlight.Name = "DarkESP"
+                    highlight.FillColor = Color3.fromRGB(255, 0, 0)
+                    highlight.Parent = p.Character
+                end
+            else
+                if highlight then highlight:Destroy() end
+            end
+        end
+    end
+end)
+
+-- 3. Infinite Yield
+CreateBtn("🚀 Admin (Inf Yield)", function()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
 end)
 
--- 2. Fly
-CreateButton("🕊️ Fly", UDim2.new(0.05, 0, 0.45, 0), function()
+-- 4. Fly
+CreateBtn("🕊️ Fly", function()
     loadstring(game:HttpGet('https://pastebin.com/raw/YSL3xKYU'))()
 end)
 
--- 3. Noclip
-CreateButton("👻 Noclip", UDim2.new(0.05, 0, 0.65, 0), function()
-    local noclip = true
+-- 5. Noclip
+CreateBtn("👻 Noclip", function()
+    local nc = true
     RunService.Stepped:Connect(function()
-        if noclip and LP.Character then
+        if nc and LP.Character then
             for _, v in pairs(LP.Character:GetDescendants()) do
-                if v:IsA('BasePart') and v.CanCollide then v.CanCollide = false end
+                if v:IsA('BasePart') then v.CanCollide = false end
             end
         end
     end)
 end)
 
--- 4. Inf Jump
-CreateButton("🦘 Infinite Jump", UDim2.new(0.05, 0, 0.85, 0), function()
+-- 6. Infinite Jump
+CreateBtn("🦘 Inf Jump", function()
     UserInputService.JumpRequest:Connect(function()
         if LP.Character then
             LP.Character:FindFirstChildOfClass('Humanoid'):ChangeState("Jumping")
@@ -100,7 +125,7 @@ CreateButton("🦘 Infinite Jump", UDim2.new(0.05, 0, 0.85, 0), function()
     end)
 end)
 
--- Rainbow effect для заголовка
+-- Райдужний текст
 task.spawn(function()
     while task.wait() do
         Title.TextColor3 = Color3.fromHSV(tick() % 5 / 5, 1, 1)
