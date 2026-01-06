@@ -2,15 +2,14 @@
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
 local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local LP = Players.LocalPlayer
 
--- Створення головного GUI (Launcher)
+-- Створення головного GUI
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "DarkLauncherUI"
--- Захист від видалення грою (якщо екзекутор підтримує)
-if syn and syn.protect_gui then
-    syn.protect_gui(ScreenGui)
-    ScreenGui.Parent = CoreGui
-elseif gethui then
+
+if gethui then
     ScreenGui.Parent = gethui()
 else
     ScreenGui.Parent = CoreGui
@@ -19,31 +18,29 @@ end
 -- Головна рамка
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 300, 0, 160)
-MainFrame.Position = UDim2.new(0.5, -150, 0.5, -80)
-MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25) -- Темний фон
+MainFrame.Size = UDim2.new(0, 300, 0, 220) -- Трохи збільшив висоту для дод. кнопок
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -110)
+MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
-MainFrame.Draggable = true -- Можна перетягувати
+MainFrame.Draggable = true
 MainFrame.Parent = ScreenGui
 
--- Закруглення кутів (UICorner)
 local MainCorner = Instance.new("UICorner")
 MainCorner.CornerRadius = UDim.new(0, 12)
 MainCorner.Parent = MainFrame
 
 -- Заголовок
 local Title = Instance.new("TextLabel")
-Title.Name = "Title"
 Title.Size = UDim2.new(1, 0, 0, 40)
 Title.BackgroundTransparency = 1
-Title.Text = "Dark Launcher"
+Title.Text = "DARK LAUNCHER"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.Font = Enum.Font.GothamBold
-Title.TextSize = 20
+Title.TextSize = 18
 Title.Parent = MainFrame
 
--- Лінія розділення
+-- Лінія
 local Line = Instance.new("Frame")
 Line.Size = UDim2.new(1, -20, 0, 1)
 Line.Position = UDim2.new(0, 10, 0, 40)
@@ -51,421 +48,61 @@ Line.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 Line.BorderSizePixel = 0
 Line.Parent = MainFrame
 
--- === КНОПКА 1: ADMIN (Infinite Yield) ===
-local AdminBtn = Instance.new("TextButton")
-AdminBtn.Name = "AdminButton"
-AdminBtn.Size = UDim2.new(0.9, 0, 0, 40)
-AdminBtn.Position = UDim2.new(0.05, 0, 0.35, 0)
-AdminBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-AdminBtn.Text = "ADMIN (Inf Yield)"
-AdminBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
-AdminBtn.Font = Enum.Font.GothamSemibold
-AdminBtn.TextSize = 16
-AdminBtn.AutoButtonColor = true
-AdminBtn.Parent = MainFrame
+-- Функція для кнопок
+local function CreateButton(name, pos, callback)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0.9, 0, 0, 35)
+    btn.Position = pos
+    btn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    btn.Text = name
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Font = Enum.Font.GothamSemibold
+    btn.TextSize = 14
+    btn.Parent = MainFrame
+    
+    local Corner = Instance.new("UICorner")
+    Corner.CornerRadius = UDim.new(0, 6)
+    Corner.Parent = btn
 
-local BtnCorner1 = Instance.new("UICorner")
-BtnCorner1.CornerRadius = UDim.new(0, 8)
-BtnCorner1.Parent = AdminBtn
+    btn.MouseButton1Click:Connect(callback)
+end
 
-AdminBtn.MouseButton1Click:Connect(function()
-    AdminBtn.Text = "Launching..."
+-- === КНОПКИ ===
+
+-- 1. Infinite Yield
+CreateButton("🚀 ADMIN (Infinite Yield)", UDim2.new(0.05, 0, 0.25, 0), function()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
-    wait(1)
-    AdminBtn.Text = "ADMIN (Inf Yield)"
 end)
 
--- === КНОПКА 2: SpIN (Super Ring Parts) ===
-local SpinBtn = Instance.new("TextButton")
-SpinBtn.Name = "SpinButton"
-SpinBtn.Size = UDim2.new(0.9, 0, 0, 40)
-SpinBtn.Position = UDim2.new(0.05, 0, 0.65, 0)
-SpinBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-SpinBtn.Text = "SpIN (Super Ring)"
-SpinBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
-SpinBtn.Font = Enum.Font.GothamSemibold
-SpinBtn.TextSize = 16
-SpinBtn.AutoButtonColor = true
-SpinBtn.Parent = MainFrame
+-- 2. Fly
+CreateButton("🕊️ Fly", UDim2.new(0.05, 0, 0.45, 0), function()
+    loadstring(game:HttpGet('https://pastebin.com/raw/YSL3xKYU'))()
+end)
 
-local BtnCorner2 = Instance.new("UICorner")
-BtnCorner2.CornerRadius = UDim.new(0, 8)
-BtnCorner2.Parent = SpinBtn
-
--- Логіка запуску SpIN скрипта
-SpinBtn.MouseButton1Click:Connect(function()
-    SpinBtn.Text = "Launched!"
-    
-    -- ЗАПУСК СКРИПТА, ЯКИЙ ТИ НАДАВ
-    task.spawn(function()
-        --[[
-           Super Ring Parts V6 by lukas - Provided by User
-        ]]
-        local Players = game:GetService("Players")
-        local RunService = game:GetService("RunService")
-        local UserInputService = game:GetService("UserInputService")
-        local SoundService = game:GetService("SoundService")
-        local StarterGui = game:GetService("StarterGui")
-        local HttpService = game:GetService("HttpService")
-
-        local LocalPlayer = Players.LocalPlayer
-
-        -- Sound Effects
-        local function playSound(soundId)
-            local sound = Instance.new("Sound")
-            sound.SoundId = "rbxassetid://" .. soundId
-            sound.Parent = SoundService
-            sound:Play()
-            sound.Ended:Connect(function()
-                sound:Destroy()
-            end)
-        end
-
-        playSound("2865227271")
-
-        -- GUI Creation (Original Script GUI)
-        local ScreenGui = Instance.new("ScreenGui")
-        ScreenGui.Name = "SuperRingPartsGUI"
-        ScreenGui.ResetOnSpawn = false
-        ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
-
-        local MainFrame = Instance.new("Frame")
-        MainFrame.Size = UDim2.new(0, 300, 0, 500)
-        MainFrame.Position = UDim2.new(0.5, -150, 0.5, -250)
-        MainFrame.BorderSizePixel = 0
-        MainFrame.Parent = ScreenGui
-
-        local UICorner = Instance.new("UICorner")
-        UICorner.CornerRadius = UDim.new(0, 20)
-        UICorner.Parent = MainFrame
-
-        local Title = Instance.new("TextLabel")
-        Title.Size = UDim2.new(1, 0, 0, 40)
-        Title.Position = UDim2.new(0, 0, 0, 0)
-        Title.Text = "Super Ring Parts V6 by lukas"
-        Title.TextColor3 = Color3.fromRGB(0, 0, 0)
-        Title.BackgroundColor3 = Color3.fromRGB(0, 204, 204)
-        Title.Font = Enum.Font.Fondamento
-        Title.TextSize = 22
-        Title.Parent = MainFrame
-
-        local TitleCorner = Instance.new("UICorner")
-        TitleCorner.CornerRadius = UDim.new(0, 20)
-        TitleCorner.Parent = Title
-
-        local ToggleButton = Instance.new("TextButton")
-        ToggleButton.Size = UDim2.new(0.8, 0, 0, 40)
-        ToggleButton.Position = UDim2.new(0.1, 0, 0.1, 0)
-        ToggleButton.Text = "Ring Off"
-        ToggleButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-        ToggleButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-        ToggleButton.Font = Enum.Font.Fondamento
-        ToggleButton.TextSize = 18
-        ToggleButton.Parent = MainFrame
-
-        local ToggleCorner = Instance.new("UICorner")
-        ToggleCorner.CornerRadius = UDim.new(0, 10)
-        ToggleCorner.Parent = ToggleButton
-
-        local config = {
-            radius = 50,
-            height = 100,
-            rotationSpeed = 10,
-            attractionStrength = 1000,
-        }
-
-        local function saveConfig()
-            if writefile then
-                local configStr = HttpService:JSONEncode(config)
-                writefile("SuperRingPartsConfig.txt", configStr)
+-- 3. Noclip
+CreateButton("👻 Noclip", UDim2.new(0.05, 0, 0.65, 0), function()
+    local noclip = true
+    RunService.Stepped:Connect(function()
+        if noclip and LP.Character then
+            for _, v in pairs(LP.Character:GetDescendants()) do
+                if v:IsA('BasePart') and v.CanCollide then v.CanCollide = false end
             end
         end
-
-        local function loadConfig()
-            if isfile and isfile("SuperRingPartsConfig.txt") then
-                local configStr = readfile("SuperRingPartsConfig.txt")
-                config = HttpService:JSONDecode(configStr)
-            end
-        end
-        
-        pcall(loadConfig) -- Protected call in case file system isn't supported
-
-        local function createControl(name, positionY, color, labelText, defaultValue, callback)
-            local DecreaseButton = Instance.new("TextButton")
-            DecreaseButton.Size = UDim2.new(0.2, 0, 0, 40)
-            DecreaseButton.Position = UDim2.new(0.1, 0, positionY, 0)
-            DecreaseButton.Text = "-"
-            DecreaseButton.BackgroundColor3 = color
-            DecreaseButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-            DecreaseButton.Font = Enum.Font.Fondamento
-            DecreaseButton.TextSize = 18
-            DecreaseButton.Parent = MainFrame
-
-            local IncreaseButton = Instance.new("TextButton")
-            IncreaseButton.Size = UDim2.new(0.2, 0, 0, 40)
-            IncreaseButton.Position = UDim2.new(0.7, 0, positionY, 0)
-            IncreaseButton.Text = "+"
-            IncreaseButton.BackgroundColor3 = color
-            IncreaseButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-            IncreaseButton.Font = Enum.Font.Fondamento
-            IncreaseButton.TextSize = 18
-            IncreaseButton.Parent = MainFrame
-
-            local Display = Instance.new("TextLabel")
-            Display.Size = UDim2.new(0.4, 0, 0, 40)
-            Display.Position = UDim2.new(0.3, 0, positionY, 0)
-            Display.Text = labelText .. ": " .. defaultValue
-            Display.BackgroundColor3 = Color3.fromRGB(255, 153, 51)
-            Display.TextColor3 = Color3.fromRGB(0, 0, 0)
-            Display.Font = Enum.Font.Fondamento
-            Display.TextSize = 18
-            Display.Parent = MainFrame
-
-            local TextBox = Instance.new("TextBox")
-            TextBox.Size = UDim2.new(0.8, 0, 0, 35)
-            TextBox.Position = UDim2.new(0.1, 0, positionY + 0.1, 0)
-            TextBox.PlaceholderText = "Enter " .. labelText
-            TextBox.BackgroundColor3 = Color3.fromRGB(0, 0, 255)
-            TextBox.TextColor3 = Color3.fromRGB(0, 0, 0)
-            TextBox.Font = Enum.Font.Fondamento
-            TextBox.TextSize = 18
-            TextBox.Parent = MainFrame
-
-            local TextBoxCorner = Instance.new("UICorner")
-            TextBoxCorner.CornerRadius = UDim.new(0, 10)
-            TextBoxCorner.Parent = TextBox
-
-            DecreaseButton.MouseButton1Click:Connect(function()
-                local value = tonumber(Display.Text:match("%d+"))
-                if value then
-                    value = math.max(0, value - 10)
-                    Display.Text = labelText .. ": " .. value
-                    callback(value)
-                    playSound("12221967")
-                    pcall(saveConfig)
-                end
-            end)
-
-            IncreaseButton.MouseButton1Click:Connect(function()
-                local value = tonumber(Display.Text:match("%d+"))
-                if value then
-                    value = math.min(10000, value + 10)
-                    Display.Text = labelText .. ": " .. value
-                    callback(value)
-                    playSound("12221967")
-                    pcall(saveConfig)
-                end
-            end)
-
-            TextBox.FocusLost:Connect(function(enterPressed)
-                if enterPressed then
-                    local newValue = tonumber(TextBox.Text)
-                    if newValue then
-                        newValue = math.clamp(newValue, 0, 10000)
-                        Display.Text = labelText .. ": " .. newValue
-                        TextBox.Text = ""
-                        callback(newValue)
-                        playSound("12221967")
-                        pcall(saveConfig)
-                    else
-                        TextBox.Text = ""
-                    end
-                end
-            end)
-        end
-
-        createControl("Radius", 0.2, Color3.fromRGB(153, 153, 0), "Radius", config.radius, function(value) config.radius = value end)
-        createControl("Height", 0.4, Color3.fromRGB(153, 0, 153), "Height", config.height, function(value) config.height = value end)
-        createControl("RotationSpeed", 0.6, Color3.fromRGB(0, 153, 153), "Rotation Speed", config.rotationSpeed, function(value) config.rotationSpeed = value end)
-        createControl("AttractionStrength", 0.8, Color3.fromRGB(153, 0, 0), "Attraction Strength", config.attractionStrength, function(value) config.attractionStrength = value end)
-
-        local MinimizeButton = Instance.new("TextButton")
-        MinimizeButton.Size = UDim2.new(0, 30, 0, 30)
-        MinimizeButton.Position = UDim2.new(1, -35, 0, 5)
-        MinimizeButton.Text = "-"
-        MinimizeButton.BackgroundColor3 = Color3.fromRGB(255, 255, 0)
-        MinimizeButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-        MinimizeButton.Font = Enum.Font.Fondamento
-        MinimizeButton.TextSize = 15
-        MinimizeButton.Parent = MainFrame
-        local MinimizeCorner = Instance.new("UICorner")
-        MinimizeCorner.CornerRadius = UDim.new(0, 15)
-        MinimizeCorner.Parent = MinimizeButton
-
-        local minimized = false
-        MinimizeButton.MouseButton1Click:Connect(function()
-            minimized = not minimized
-            if minimized then
-                MainFrame:TweenSize(UDim2.new(0, 300, 0, 40), "Out", "Quad", 0.3, true)
-                MinimizeButton.Text = "+"
-                for _, child in pairs(MainFrame:GetChildren()) do
-                    if child:IsA("GuiObject") and child ~= Title and child ~= MinimizeButton then
-                        child.Visible = false
-                    end
-                end
-            else
-                MainFrame:TweenSize(UDim2.new(0, 300, 0, 500), "Out", "Quad", 0.3, true)
-                MinimizeButton.Text = "-"
-                for _, child in pairs(MainFrame:GetChildren()) do
-                    if child:IsA("GuiObject") then
-                        child.Visible = true
-                    end
-                end
-            end
-            playSound("12221967")
-        end)
-
-        -- Dragging Logic
-        local dragging, dragInput, dragStart, startPos
-        local function update(input)
-            local delta = input.Position - dragStart
-            MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-        end
-        MainFrame.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                dragging = true
-                dragStart = input.Position
-                startPos = MainFrame.Position
-                input.Changed:Connect(function()
-                    if input.UserInputState == Enum.UserInputState.End then dragging = false end
-                end)
-            end
-        end)
-        MainFrame.InputChanged:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-                dragInput = input
-            end
-        end)
-        UserInputService.InputChanged:Connect(function(input)
-            if input == dragInput and dragging then update(input) end
-        end)
-
-        -- Logic for Ring Parts
-        local ringPartsEnabled = false
-        local parts = {}
-        
-        local function RetainPart(Part)
-            if Part:IsA("BasePart") and not Part.Anchored and Part:IsDescendantOf(workspace) then
-                if Part.Parent == LocalPlayer.Character or Part:IsDescendantOf(LocalPlayer.Character) then return false end
-                Part.CustomPhysicalProperties = PhysicalProperties.new(0, 0, 0, 0, 0)
-                Part.CanCollide = false
-                return true
-            end
-            return false
-        end
-
-        local function addPart(part)
-            if RetainPart(part) then
-                if not table.find(parts, part) then table.insert(parts, part) end
-            end
-        end
-        local function removePart(part)
-            local index = table.find(parts, part)
-            if index then table.remove(parts, index) end
-        end
-
-        for _, part in pairs(workspace:GetDescendants()) do addPart(part) end
-        workspace.DescendantAdded:Connect(addPart)
-        workspace.DescendantRemoving:Connect(removePart)
-
-        RunService.Heartbeat:Connect(function()
-            if not ringPartsEnabled then return end
-            local character = LocalPlayer.Character
-            local hrp = character and character:FindFirstChild("HumanoidRootPart")
-            if hrp then
-                local center = hrp.Position
-                for _, part in pairs(parts) do
-                    if part.Parent and not part.Anchored then
-                        local pos = part.Position
-                        local distance = (Vector3.new(pos.X, center.Y, pos.Z) - center).Magnitude
-                        local angle = math.atan2(pos.Z - center.Z, pos.X - center.X)
-                        local newAngle = angle + math.rad(config.rotationSpeed)
-                        local targetPos = Vector3.new(
-                            center.X + math.cos(newAngle) * math.min(config.radius, distance),
-                            center.Y + (config.height * (math.abs(math.sin((pos.Y - center.Y) / config.height)))),
-                            center.Z + math.sin(newAngle) * math.min(config.radius, distance)
-                        )
-                        local direction = (targetPos - part.Position).unit
-                        part.Velocity = direction * config.attractionStrength
-                    end
-                end
-            end
-        end)
-
-        ToggleButton.MouseButton1Click:Connect(function()
-            ringPartsEnabled = not ringPartsEnabled
-            ToggleButton.Text = ringPartsEnabled and "Tornado On" or "Tornado Off"
-            ToggleButton.BackgroundColor3 = ringPartsEnabled and Color3.fromRGB(50, 205, 50) or Color3.fromRGB(160, 82, 45)
-            playSound("12221967")
-        end)
-        
-        -- Extra Buttons (Fly, Noclip, etc)
-        local function CreateExtraBtn(text, posScale, color, call)
-            local btn = Instance.new("TextButton")
-            btn.Parent = MainFrame
-            btn.BackgroundColor3 = color
-            btn.Position = UDim2.new(posScale, 0, 1, 0)
-            btn.Size = UDim2.new(0.08, 0, 0.1, 0)
-            btn.Font = Enum.Font.Legacy
-            btn.TextColor3 = Color3.fromRGB(242, 243, 243)
-            btn.Text = text
-            btn.TextScaled = true
-            btn.MouseButton1Click:Connect(call)
-            return btn
-        end
-
-        CreateExtraBtn("Fly", 1, Color3.fromRGB(0,0,255), function() loadstring(game:HttpGet('https://pastebin.com/raw/YSL3xKYU'))() end)
-        CreateExtraBtn("NoFall", 0.9, Color3.fromRGB(255,0,0), function() 
-             local lp = game.Players.LocalPlayer
-             local function nofalldamage(chr)
-                 local root = chr:WaitForChild("HumanoidRootPart")
-                 if root then
-                     local con
-                     con = RunService.Heartbeat:Connect(function()
-                         if not root.Parent then con:Disconnect() return end
-                         local old = root.AssemblyLinearVelocity
-                         root.AssemblyLinearVelocity = Vector3.zero
-                         RunService.RenderStepped:Wait()
-                         root.AssemblyLinearVelocity = old
-                     end)
-                 end
-             end
-             if lp.Character then nofalldamage(lp.Character) end
-             lp.CharacterAdded:Connect(nofalldamage)
-        end)
-        
-        CreateExtraBtn("Noclip", 0.8, Color3.fromRGB(0,0,0), function() 
-             local noclip = true
-             game:GetService('RunService').Stepped:Connect(function()
-                 if noclip and LocalPlayer.Character then
-                    for _,v in pairs(LocalPlayer.Character:GetDescendants()) do
-                        if v:IsA('BasePart') and v.CanCollide then v.CanCollide = false end
-                    end
-                 end
-             end)
-        end)
-        
-        CreateExtraBtn("InfJump", 0.7, Color3.fromRGB(0,255,0), function() 
-             UserInputService.JumpRequest:connect(function()
-                 if LocalPlayer.Character then LocalPlayer.Character:FindFirstChildOfClass'Humanoid':ChangeState("Jumping") end
-             end)
-        end)
-        
-        CreateExtraBtn("InfYield", 0.6, Color3.fromRGB(0,255,255), function() loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))() end)
-        CreateExtraBtn("Nameless", 0.5, Color3.fromRGB(0,0,0), function() loadstring(game:HttpGet("https://scriptblox.com/raw/Universal-Script-Nameless-Admin-FE-11243"))() end)
-        CreateExtraBtn("FPS", 0.4, Color3.fromRGB(0,0,0), function() loadstring(game:HttpGet("https://pastebin.com/raw/ySHJdZpb",true))() end)
-        
-        -- Rainbow effects
-        task.spawn(function()
-            local hue = 0
-            while task.wait() do
-                hue = (hue + 0.005) % 1
-                MainFrame.BackgroundColor3 = Color3.fromHSV(hue, 1, 1)
-                Title.TextColor3 = Color3.fromHSV(hue, 1, 1)
-            end
-        end)
     end)
-    
-    wait(2)
-    SpinBtn.Text = "SpIN (Super Ring)"
+end)
+
+-- 4. Inf Jump
+CreateButton("🦘 Infinite Jump", UDim2.new(0.05, 0, 0.85, 0), function()
+    UserInputService.JumpRequest:Connect(function()
+        if LP.Character then
+            LP.Character:FindFirstChildOfClass('Humanoid'):ChangeState("Jumping")
+        end
+    end)
+end)
+
+-- Rainbow effect для заголовка
+task.spawn(function()
+    while task.wait() do
+        Title.TextColor3 = Color3.fromHSV(tick() % 5 / 5, 1, 1)
+    end
 end)
