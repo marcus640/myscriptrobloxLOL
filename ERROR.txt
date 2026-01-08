@@ -5,29 +5,27 @@ local PlayerGui = LP:WaitForChild("PlayerGui")
 
 -- Створюємо ScreenGui
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "PurpleHub_Custom"
+ScreenGui.Name = "PurpleHub_Final"
 ScreenGui.Parent = PlayerGui
 ScreenGui.ResetOnSpawn = false
 
 -- ПЕРЕМІННА ДЛЯ ТВОГО ЛОГОТИПУ (Встав посилання на Raw файл з GitHub)
 local LogoRawLink = "https://raw.githubusercontent.com/ТВІЙ_ЮЗЕРНЕЙМ/ТВІЙ_РЕПОЗИТОРІЙ/main/logo.jpg"
 
--- 1. КНОПКА-ЛОГОТИП
+-- 1. КНОПКА-ЛОГОТИП (Draggable)
 local LogoButton = Instance.new("ImageButton")
 LogoButton.Name = "LogoButton"
 LogoButton.Parent = ScreenGui
-LogoButton.BackgroundColor3 = Color3.fromRGB(170, 0, 255) -- Твій фіолетовий колір
+LogoButton.BackgroundColor3 = Color3.fromRGB(170, 0, 255) 
 LogoButton.Position = UDim2.new(0.05, 0, 0.8, 0)
 LogoButton.Size = UDim2.new(0, 70, 0, 70)
-LogoButton.Image = LogoRawLink -- Твій JPG файл
+LogoButton.Image = LogoRawLink
 LogoButton.ZIndex = 10
 
--- Робимо кнопку круглою
 local UICornerLogo = Instance.new("UICorner")
 UICornerLogo.CornerRadius = UDim.new(1, 0)
 UICornerLogo.Parent = LogoButton
 
--- Додамо контур (Outline) для краси
 local UIStroke = Instance.new("UIStroke")
 UIStroke.Color = Color3.fromRGB(255, 255, 255)
 UIStroke.Thickness = 2
@@ -38,8 +36,8 @@ local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Parent = ScreenGui
 MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-MainFrame.Position = UDim2.new(0.5, -150, 1.2, 0) -- Початкова позиція (сховано знизу)
-MainFrame.Size = UDim2.new(0, 300, 0, 350)
+MainFrame.Position = UDim2.new(0.5, -150, 1.2, 0) -- Початкова позиція (сховано)
+MainFrame.Size = UDim2.new(0, 300, 0, 280) -- Трохи зменшив розмір, бо видалили Axe
 MainFrame.BorderSizePixel = 0
 MainFrame.ClipsDescendants = true
 
@@ -80,32 +78,37 @@ local function AddButton(text, yPos, callback)
     btn.MouseButton1Click:Connect(callback)
 end
 
--- Додаємо функції
-AddButton("Get Neon Axe", 70, function()
-    print("Axe Equipped!")
-    -- Сюди код сокири
-end)
+-- [ КНОПКИ МЕНЮ ] --
 
-AddButton("Infinite Yield", 125, function()
+-- Кнопка Infinite Yield
+AddButton("Infinite Yield", 70, function()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
 end)
 
-AddButton("Fly Hack", 180, function()
-    -- Команда флай
+-- Кнопка Fly (ВИПРАВЛЕНО)
+AddButton("Fly Hack GUI", 125, function()
+    task.spawn(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
+    end)
 end)
 
--- 4. АНІМАЦІЯ ВІДКРИТТЯ
+-- Кнопка для закриття всього Хаба
+AddButton("Destroy Hub", 180, function()
+    ScreenGui:Destroy()
+end)
+
+-- 4. АНІМАЦІЯ ВІДКРИТТЯ / ЗАКРИТТЯ
 local isOpen = false
 LogoButton.MouseButton1Click:Connect(function()
     if not isOpen then
-        MainFrame:TweenPosition(UDim2.new(0.5, -150, 0.5, -175), "Out", "Back", 0.5, true)
+        MainFrame:TweenPosition(UDim2.new(0.5, -150, 0.5, -140), "Out", "Back", 0.5, true)
     else
         MainFrame:TweenPosition(UDim2.new(0.5, -150, 1.2, 0), "In", "Back", 0.5, true)
     end
     isOpen = not isOpen
 end)
 
--- 5. DRAG (Перетягування кнопки)
+-- 5. ПЕРЕТЯГУВАННЯ ЛОГОТИПА (Drag)
 local UserInputService = game:GetService("UserInputService")
 local dragging, dragInput, dragStart, startPos
 
