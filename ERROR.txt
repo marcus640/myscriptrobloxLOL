@@ -1,110 +1,165 @@
+-- [[ H2K4R HUB - FINAL VERSION ]] --
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
+local StarterGui = game:GetService("StarterGui")
 local LP = Players.LocalPlayer
-local PlayerGui = LP:WaitForChild("PlayerGui")
 
--- Видаляємо стару версію
-if PlayerGui:FindFirstChild("GhostHub_Fixed") then
-    PlayerGui.GhostHub_Fixed:Destroy()
+-- Визначення безпечного місця для GUI
+local function GetBestParent()
+    local success, parent = pcall(function() return gethui() end)
+    if success and parent then return parent end
+    local success2, core = pcall(function() return game:GetService("CoreGui") end)
+    if success2 and core then return core end
+    return LP:WaitForChild("PlayerGui")
+end
+
+local ParentTarget = GetBestParent()
+
+-- Видалення старої версії
+if ParentTarget:FindFirstChild("H2K4R_Hub") then
+    ParentTarget.H2K4R_Hub:Destroy()
 end
 
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "GhostHub_Fixed"
-ScreenGui.Parent = PlayerGui
-ScreenGui.ResetOnSpawn = false
+ScreenGui.Name = "H2K4R_Hub"
+ScreenGui.Parent = ParentTarget
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- [[ КНОПКА G ]] --
-local ToggleBtn = Instance.new("TextButton")
-ToggleBtn.Name = "ToggleBtn"
-ToggleBtn.Parent = ScreenGui
-ToggleBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-ToggleBtn.Position = UDim2.new(0, 100, 0, 100) -- Початкова позиція
-ToggleBtn.Size = UDim2.new(0, 55, 0, 55)
-ToggleBtn.Text = "G"
-ToggleBtn.TextColor3 = Color3.fromRGB(170, 0, 255)
-ToggleBtn.Font = Enum.Font.GothamBold
-ToggleBtn.TextSize = 25
-ToggleBtn.Active = true
-ToggleBtn.Draggable = true -- Вмикаємо стандартне перетягування Roblox
-
-local Corner = Instance.new("UICorner", ToggleBtn)
-Corner.CornerRadius = UDim.new(1, 0)
-
-local Stroke = Instance.new("UIStroke", ToggleBtn)
-Stroke.Color = Color3.fromRGB(170, 0, 255)
-Stroke.Thickness = 2
-
--- [[ ГОЛОВНЕ МЕНЮ ]] --
+-- [[ ГОЛОВНЕ ВІКНО ]] --
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Parent = ScreenGui
 MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-MainFrame.Position = UDim2.new(0.5, -200, 0.5, -125)
-MainFrame.Size = UDim2.new(0, 400, 0, 250)
-MainFrame.Visible = false -- Спочатку сховано
-MainFrame.Active = true
-MainFrame.Draggable = true -- Меню теж можна рухати
+MainFrame.Position = UDim2.new(0.5, -200, 0.5, -160)
+MainFrame.Size = UDim2.new(0, 400, 0, 320)
+MainFrame.Visible = false
 
-Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 10)
+local MCorner = Instance.new("UICorner", MainFrame)
 local MStroke = Instance.new("UIStroke", MainFrame)
 MStroke.Color = Color3.fromRGB(170, 0, 255)
-MStroke.Thickness = 1
+MStroke.Thickness = 2
 
--- Sidebar
-local Sidebar = Instance.new("Frame", MainFrame)
-Sidebar.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
-Sidebar.Size = UDim2.new(0, 100, 1, 0)
-local Title = Instance.new("TextLabel", Sidebar)
-Title.Text = "GHOST"
+-- Заголовок
+local Title = Instance.new("TextLabel", MainFrame)
+Title.Size = UDim2.new(1, 0, 0, 50)
+Title.BackgroundTransparency = 1
+Title.Text = "H2K4R HUB"
 Title.TextColor3 = Color3.fromRGB(170, 0, 255)
 Title.Font = Enum.Font.GothamBold
-Title.TextSize = 18
-Title.Size = UDim2.new(1, 0, 0, 40)
-Title.BackgroundTransparency = 1
+Title.TextSize = 24
 
--- Список кнопок (Scrolling)
+-- Область прокрутки
 local Scroll = Instance.new("ScrollingFrame", MainFrame)
-Scroll.Position = UDim2.new(0, 110, 0, 10)
-Scroll.Size = UDim2.new(1, -120, 1, -20)
+Scroll.Position = UDim2.new(0, 10, 0, 55)
+Scroll.Size = UDim2.new(1, -20, 1, -65)
 Scroll.BackgroundTransparency = 1
-Scroll.CanvasSize = UDim2.new(0, 0, 0, 400)
-Scroll.ScrollBarThickness = 2
+Scroll.CanvasSize = UDim2.new(0, 0, 0, 550)
+Scroll.ScrollBarThickness = 3
 Scroll.ScrollBarImageColor3 = Color3.fromRGB(170, 0, 255)
 
 local Layout = Instance.new("UIListLayout", Scroll)
-Layout.Spacing = UDim.new(0, 7)
+Layout.Spacing = UDim.new(0, 8)
 
--- Функція додавання кнопок
-local function AddBtn(name, callback)
-    local b = Instance.new("TextButton", Scroll)
-    b.Size = UDim2.new(0.95, 0, 0, 35)
-    b.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    b.Text = name
-    b.TextColor3 = Color3.new(1, 1, 1)
-    b.Font = Enum.Font.Gotham
-    b.TextSize = 14
-    Instance.new("UICorner", b)
-    b.MouseButton1Click:Connect(callback)
+-- Функція створення кнопок
+local function AddButton(name, callback)
+    local btn = Instance.new("TextButton", Scroll)
+    btn.Size = UDim2.new(1, 0, 0, 40)
+    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    btn.Text = name
+    btn.TextColor3 = Color3.new(1, 1, 1)
+    btn.Font = Enum.Font.GothamSemibold
+    btn.TextSize = 14
+    Instance.new("UICorner", btn)
+    btn.MouseButton1Click:Connect(callback)
 end
 
--- ТВОЇ СКРИПТИ
-AddBtn("Super Ring V6", function()
+-- [[ СПИСОК СКРИПТІВ ]] --
+
+AddButton("💍 Super Ring V6", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/chesslovers69/Super-ring-parts-v6/refs/heads/main/Bylukaslol"))()
 end)
 
-AddBtn("Fly Hack GUI", function()
+AddButton("✈️ Fly GUI V3", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
 end)
 
-AddBtn("Infinite Yield", function()
+AddButton("🛡️ Anti AFK", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/hassanxzayn-lua/Anti-afk/main/antiafkbyhassanxzyn"))()
+end)
+
+AddButton("⚡ Click TP Tool", function()
+    local mouse = LP:GetMouse()
+    local tool = Instance.new("Tool")
+    tool.RequiresHandle = false
+    tool.Name = "Tp Tool (Equip)"
+    tool.Activated:connect(function()
+        local pos = mouse.Hit+Vector3.new(0,2.5,0)
+        LP.Character.HumanoidRootPart.CFrame = CFrame.new(pos.X,pos.Y,pos.Z)
+    end)
+    tool.Parent = LP.Backpack
+end)
+
+AddButton("🕺 Animations / Emotes", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/7yd7/Hub/refs/heads/Branch/GUIS/Emotes.lua"))()
+end)
+
+AddButton("🔫 PVP / Shooter Script", function()
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/eugenevir/guihot/main/f.txt'))()
+end)
+
+AddButton("🌐 Infinite Yield", function()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
 end)
 
--- [[ ГОЛОВНИЙ ФІКС: ВІДКРИТТЯ ]] --
--- Використовуємо Activated, воно найкраще працює з перетягуванням
-ToggleBtn.Activated:Connect(function()
+-- [[ КНОПКА ВІДКРИТТЯ ]] --
+local ToggleBtn = Instance.new("TextButton")
+ToggleBtn.Name = "Toggle"
+ToggleBtn.Parent = ScreenGui
+ToggleBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+ToggleBtn.Position = UDim2.new(0, 50, 0, 200)
+ToggleBtn.Size = UDim2.new(0, 60, 0, 60)
+ToggleBtn.Text = "H"
+ToggleBtn.TextColor3 = Color3.fromRGB(170, 0, 255)
+ToggleBtn.Font = Enum.Font.GothamBold
+ToggleBtn.TextSize = 28
+ToggleBtn.ZIndex = 1000
+
+Instance.new("UICorner", ToggleBtn).CornerRadius = UDim.new(1, 0)
+local BStroke = Instance.new("UIStroke", ToggleBtn)
+BStroke.Color = Color3.fromRGB(170, 0, 255)
+BStroke.Thickness = 2
+
+-- Логіка
+ToggleBtn.MouseButton1Click:Connect(function()
     MainFrame.Visible = not MainFrame.Visible
 end)
 
-print("Ghost Hub Fixed Loaded!")
+-- Перетягування кнопки
+local dragActive, dragStart, startPos
+ToggleBtn.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragActive = true
+        dragStart = input.Position
+        startPos = ToggleBtn.Position
+    end
+end)
+UIS.InputChanged:Connect(function(input)
+    if dragActive and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        ToggleBtn.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+UIS.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 then dragActive = false end end)
+
+-- Відкриття на RightShift
+UIS.InputBegan:Connect(function(input, gp)
+    if not gp and input.KeyCode == Enum.KeyCode.RightShift then
+        MainFrame.Visible = not MainFrame.Visible
+    end
+end)
+
+StarterGui:SetCore("SendNotification", {
+    Title = "H2K4R HUB";
+    Text = "Успішно завантажено! Кнопка 'H'";
+    Duration = 5;
+})
