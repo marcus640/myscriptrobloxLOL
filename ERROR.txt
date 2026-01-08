@@ -1,185 +1,115 @@
--- Служби
 local Players = game:GetService("Players")
-local CoreGui = game:GetService("CoreGui")
-local UserInputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
 local LP = Players.LocalPlayer
+local PlayerGui = LP:WaitForChild("PlayerGui")
 
--- Змінні контролю
-local _G_Active = true
-local espEnabled = false
-local noclipEnabled = false
-
--- Функція для виконання команд в Infinite Yield
-local function RunIYCommand(cmd)
-    local iy = loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
-    task.wait(0.5) -- чекаємо завантаження
-    game:GetService("Players").LocalPlayer.Chatted:Fire(";"..cmd)
-end
-
--- Створення GUI
+-- Створюємо ScreenGui
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "DarkLauncherFinal"
-ScreenGui.Parent = (gethui and gethui()) or CoreGui
+ScreenGui.Name = "PurpleHubGui"
+ScreenGui.Parent = PlayerGui
+ScreenGui.ResetOnSpawn = false
 
--- Головна рамка
+-- ПЕРЕМІННІ ДЛЯ МОДУЛЯ (Посилання на твій логотип з GitHub)
+local LogoLink = "rbxassetid://123456789" -- Заміни на посилання з GitHub або ID
+
+-- 1. СТВОРЮЄМО КНОПКУ-ЛОГОТИП
+local LogoButton = Instance.new("ImageButton")
+LogoButton.Name = "LogoButton"
+LogoButton.Parent = ScreenGui
+LogoButton.BackgroundColor3 = Color3.fromRGB(170, 0, 255)
+LogoButton.Position = UDim2.new(0.02, 0, 0.85, 0)
+LogoButton.Size = UDim2.new(0, 60, 0, 60)
+LogoButton.Image = LogoLink
+LogoButton.ClipsDescendants = true
+
+local UICornerLogo = Instance.new("UICorner")
+UICornerLogo.CornerRadius = UDim.new(1, 0) -- Робимо її круглою
+UICornerLogo.Parent = LogoButton
+
+-- 2. СТВОРЮЄМО ГОЛОВНЕ МЕНЮ
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 300, 0, 250)
-MainFrame.Position = UDim2.new(0.5, -150, 0.5, -125)
-MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-MainFrame.Active = true
-MainFrame.Draggable = true
+MainFrame.Name = "MainFrame"
 MainFrame.Parent = ScreenGui
-Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 12)
+MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -100)
+MainFrame.Size = UDim2.new(0, 300, 0, 250)
+MainFrame.Visible = false -- Спочатку сховане
+MainFrame.BorderSizePixel = 0
 
--- КНОПКА ЗАКРИТТЯ (ХРЕСТИК)
-local CloseBtn = Instance.new("TextButton")
-CloseBtn.Size = UDim2.new(0, 30, 0, 30)
-CloseBtn.Position = UDim2.new(1, -35, 0, 5)
-CloseBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
-CloseBtn.Text = "X"
-CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-CloseBtn.Font = Enum.Font.GothamBold
-CloseBtn.TextSize = 18
-CloseBtn.Parent = MainFrame
-Instance.new("UICorner", CloseBtn).CornerRadius = UDim.new(0, 8)
+local UICornerMenu = Instance.new("UICorner")
+UICornerMenu.Parent = MainFrame
 
-CloseBtn.MouseButton1Click:Connect(function()
-    _G_Active = false
-    espEnabled = false
-    noclipEnabled = false
-    for _, p in pairs(Players:GetPlayers()) do
-        if p.Character and p.Character:FindFirstChild("DarkESP") then
-            p.Character.DarkESP:Destroy()
-        end
-    end
-    ScreenGui:Destroy()
-end)
-
--- Заголовок
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, -40, 0, 40)
-Title.BackgroundTransparency = 1
-Title.Text = "DARK LAUNCHER"
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.Parent = MainFrame
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.BackgroundColor3 = Color3.fromRGB(170, 0, 255)
+Title.Text = "PURPLE HUB"
+Title.TextColor3 = Color3.new(1, 1, 1)
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 18
-Title.Parent = MainFrame
 
--- Список з прокруткою
-local Scroll = Instance.new("ScrollingFrame")
-Scroll.Size = UDim2.new(1, -10, 1, -50)
-Scroll.Position = UDim2.new(0, 5, 0, 45)
-Scroll.BackgroundTransparency = 1
-Scroll.CanvasSize = UDim2.new(0, 0, 0, 450) -- Збільшив під нові кнопки
-Scroll.ScrollBarThickness = 4
-Scroll.Parent = MainFrame
+local UICornerTitle = Instance.new("UICorner")
+UICornerTitle.Parent = Title
 
-local ListLayout = Instance.new("UIListLayout")
-ListLayout.Parent = Scroll
-ListLayout.Padding = UDim.new(0, 8)
-ListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-
-local function CreateBtn(name, callback)
+-- 3. ДОДАЄМО КНОПКИ В МЕНЮ (Приклад)
+local function CreateMenuButton(text, pos, callback)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0.9, 0, 0, 40)
+    btn.Parent = MainFrame
+    btn.Size = UDim2.new(0.8, 0, 0, 40)
+    btn.Position = pos
     btn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    btn.Text = name
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.Font = Enum.Font.GothamSemibold
-    btn.Parent = Scroll
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
+    btn.Text = text
+    btn.TextColor3 = Color3.new(1, 1, 1)
+    btn.Font = Enum.Font.Gotham
+    btn.TextSize = 14
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = btn
+    
     btn.MouseButton1Click:Connect(callback)
 end
 
--- === КНОПКИ ===
-
--- 1. WalkFly (через Infinite Yield)
-CreateBtn("👟 WalkFly (IY)", function()
-    loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
-    task.wait(0.5)
-    game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(";walkfly", "All")
-    -- Якщо в грі старий чат, використовуємо альтернативу:
-    Players:Chat(";walkfly")
+-- Кнопки в меню
+CreateMenuButton("Get Neon Axe", UDim2.new(0.1, 0, 0.25, 0), function()
+    print("Видаю сокиру...")
+    -- Сюди встав код видачі сокири
 end)
 
--- 2. Spin 10 (через Infinite Yield)
-CreateBtn("🌀 Spin 10 (IY)", function()
-    loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
-    task.wait(0.5)
-    Players:Chat(";spin 10")
-end)
-
--- 3. Fly Gui (ItzXery)
-CreateBtn("🕊️ Fly Gui", function()
-    loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Fly-Gui-By-ItzXery-67078"))()
-end)
-
--- 4. TP Tool
-CreateBtn("📍 Get TP Tool", function()
-    local mouse = LP:GetMouse()
-    local tool = Instance.new("Tool")
-    tool.RequiresHandle = false
-    tool.Name = "TP Tool"
-    tool.Activated:Connect(function()
-        if LP.Character then LP.Character:MoveTo(mouse.Hit.p + Vector3.new(0, 3, 0)) end
-    end)
-    tool.Parent = LP.Backpack
-end)
-
--- 5. ESP
-CreateBtn("👁️ ESP (Wallhack)", function()
-    espEnabled = not espEnabled
-    task.spawn(function()
-        while espEnabled and _G_Active do
-            for _, p in pairs(Players:GetPlayers()) do
-                if p ~= LP and p.Character then
-                    if not p.Character:FindFirstChild("DarkESP") then
-                        local h = Instance.new("Highlight", p.Character)
-                        h.Name = "DarkESP"
-                        h.FillColor = Color3.fromRGB(255, 0, 0)
-                    end
-                end
-            end
-            task.wait(1)
-        end
-    end)
-end)
-
--- 6. Noclip
-CreateBtn("👻 Noclip", function()
-    noclipEnabled = not noclipEnabled
-end)
-
--- 7. Infinite Yield (Просто запуск)
-CreateBtn("🚀 Admin (Inf Yield)", function()
+CreateMenuButton("Infinite Yield", UDim2.new(0.1, 0, 0.5, 0), function()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
 end)
 
--- 8. Inf Jump
-CreateBtn("🦘 Inf Jump", function()
-    local connection
-    connection = UserInputService.JumpRequest:Connect(function()
-        if not _G_Active then connection:Disconnect() return end
-        if LP.Character then
-            LP.Character:FindFirstChildOfClass('Humanoid'):ChangeState("Jumping")
-        end
-    end)
+-- 4. ЛОГІКА ВІДКРИТТЯ/ЗАКРИТТЯ
+LogoButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible
+    -- Можна додати звук кліку
 end)
 
--- Noclip Logic
-RunService.Stepped:Connect(function()
-    if noclipEnabled and _G_Active and LP.Character then
-        for _, v in pairs(LP.Character:GetDescendants()) do
-            if v:IsA('BasePart') then v.CanCollide = false end
-        end
+-- Дозволяємо перетягувати кнопку мишкою (Drag)
+local dragging, dragInput, dragStart, startPos
+LogoButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = LogoButton.Position
     end
 end)
 
--- Rainbow Title
-task.spawn(function()
-    while _G_Active do
-        Title.TextColor3 = Color3.fromHSV(tick() % 5 / 5, 1, 1)
-        task.wait()
+LogoButton.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - dragStart
+        LogoButton.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+LogoButton.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
     end
 end)
