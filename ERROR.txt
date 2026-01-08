@@ -4,7 +4,7 @@ local UserInputService = game:GetService("UserInputService")
 local LP = Players.LocalPlayer
 local PlayerGui = LP:WaitForChild("PlayerGui")
 
--- Очищення старих версій
+-- Очищення попередніх версій перед запуском
 if PlayerGui:FindFirstChild("GhostStyleHub") then
     PlayerGui.GhostStyleHub:Destroy()
 end
@@ -13,30 +13,30 @@ local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "GhostStyleHub"
 ScreenGui.Parent = PlayerGui
 ScreenGui.ResetOnSpawn = false
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 -- [[ НАЛАШТУВАННЯ ]] --
 local MainColor = Color3.fromRGB(15, 15, 15)
 local AccentColor = Color3.fromRGB(170, 0, 255)
-local TextColor = Color3.fromRGB(240, 240, 240)
-local LogoRawLink = "https://raw.githubusercontent.com/ТВІЙ_ЮЗЕР/РЕПО/main/logo.jpg"
+local LogoURL = "rbxassetid://0" -- Полиш так або встав своє
 
 -- [[ 1. КНОПКА-ЛОГОТИП ]] --
 local LogoButton = Instance.new("ImageButton")
-LogoButton.Name = "GhostLogo"
+LogoButton.Name = "OpenCloseBtn"
 LogoButton.Parent = ScreenGui
 LogoButton.BackgroundColor3 = MainColor
 LogoButton.BackgroundTransparency = 0.2
-LogoButton.Position = UDim2.new(0.02, 0, 0.8, 0)
+LogoButton.Position = UDim2.new(0.02, 0, 0.75, 0)
 LogoButton.Size = UDim2.new(0, 60, 0, 60)
-LogoButton.Image = LogoRawLink
-LogoButton.ZIndex = 10
+LogoButton.Image = LogoURL
+LogoButton.ZIndex = 100 -- Дуже високий пріоритет
 
 local LogoCorner = Instance.new("UICorner", LogoButton)
 LogoCorner.CornerRadius = UDim.new(1, 0)
 
 local LogoStroke = Instance.new("UIStroke", LogoButton)
 LogoStroke.Color = AccentColor
-LogoStroke.Thickness = 2
+LogoStroke.Thickness = 3
 
 -- [[ 2. ГОЛОВНЕ ВІКНО ]] --
 local MainFrame = Instance.new("Frame")
@@ -46,23 +46,18 @@ MainFrame.BackgroundColor3 = MainColor
 MainFrame.BackgroundTransparency = 0.1
 MainFrame.Position = UDim2.new(0.5, -250, 0.5, -150)
 MainFrame.Size = UDim2.new(0, 500, 0, 300)
-MainFrame.Visible = false
+MainFrame.Visible = false -- Сховано за замовчуванням
 MainFrame.ClipsDescendants = true
+MainFrame.ZIndex = 50
 
 Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 10)
-local MainStroke = Instance.new("UIStroke", MainFrame)
-MainStroke.Color = Color3.fromRGB(60, 60, 60)
-MainStroke.Thickness = 1
 
--- [[ 3. SIDEBAR ]] --
+-- [[ 3. SIDEBAR (Логотип та назва) ]] --
 local Sidebar = Instance.new("Frame")
 Sidebar.Name = "Sidebar"
 Sidebar.Parent = MainFrame
 Sidebar.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
-Sidebar.BackgroundTransparency = 0.5
 Sidebar.Size = UDim2.new(0, 120, 1, 0)
-
-Instance.new("UICorner", Sidebar)
 
 local HubTitle = Instance.new("TextLabel", Sidebar)
 HubTitle.Text = "GHOST"
@@ -72,102 +67,88 @@ HubTitle.TextColor3 = AccentColor
 HubTitle.Font = Enum.Font.GothamBold
 HubTitle.TextSize = 22
 
--- [[ 4. SCROLLING CONTENT (ГОРТАННЯ) ]] --
+-- [[ 4. SCROLLING AREA ]] --
 local ScrollFrame = Instance.new("ScrollingFrame")
-ScrollFrame.Name = "ScrollFrame"
 ScrollFrame.Parent = MainFrame
 ScrollFrame.Position = UDim2.new(0, 130, 0, 10)
 ScrollFrame.Size = UDim2.new(1, -140, 1, -20)
 ScrollFrame.BackgroundTransparency = 1
 ScrollFrame.BorderSizePixel = 0
-ScrollFrame.ScrollBarThickness = 3
+ScrollFrame.ScrollBarThickness = 4
 ScrollFrame.ScrollBarImageColor3 = AccentColor
-ScrollFrame.CanvasSize = UDim2.new(0, 0, 1.5, 0) -- Розмір прокрутки
+ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, 500) -- Дозволяє скролити вниз
 
 local UIList = Instance.new("UIListLayout", ScrollFrame)
-UIList.Spacing = UDim.new(0, 8)
-UIList.SortOrder = Enum.SortOrder.LayoutOrder
+UIList.Spacing = UDim.new(0, 10)
+UIList.Padding = Padding or UDim.new(0, 5)
 
--- Функція створення кнопок
-local function AddTabButton(name, callback)
+-- ФУНКЦІЯ СТВОРЕННЯ КНОПОК
+local function AddButton(name, callback)
     local Btn = Instance.new("TextButton")
     Btn.Parent = ScrollFrame
-    Btn.Size = UDim2.new(0.95, 0, 0, 40)
+    Btn.Size = UDim2.new(0.95, 0, 0, 45)
     Btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    Btn.BackgroundTransparency = 0.3
     Btn.Text = "  " .. name
-    Btn.TextColor3 = TextColor
+    Btn.TextColor3 = Color3.new(1, 1, 1)
     Btn.Font = Enum.Font.Gotham
     Btn.TextSize = 14
     Btn.TextXAlignment = Enum.TextXAlignment.Left
     
     Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 6)
-    local bs = Instance.new("UIStroke", Btn)
-    bs.Color = Color3.fromRGB(50, 50, 50)
-    bs.Thickness = 1
     
     Btn.MouseButton1Click:Connect(function()
-        local t = TweenService:Create(Btn, TweenInfo.new(0.2), {BackgroundColor3 = AccentColor})
-        t:Play()
-        t.Completed:Connect(function()
-            TweenService:Create(Btn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}):Play()
-        end)
+        print("Натиснуто кнопку: " .. name)
         callback()
     end)
 end
 
--- [[ СПИСОК ФУНКЦІЙ ]] --
-
-AddTabButton("Super Ring V6", function()
+-- [[ СПИСОК СКРИПТІВ ]] --
+AddButton("Super Ring V6", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/chesslovers69/Super-ring-parts-v6/refs/heads/main/Bylukaslol"))()
 end)
 
-AddTabButton("Fly Hack GUI", function()
-    task.spawn(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
-    end)
+AddButton("Fly Hack GUI", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
 end)
 
-AddTabButton("Infinite Yield", function()
+AddButton("Infinite Yield", function()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
 end)
 
--- [[ ЛОГІКА ТА ПЕРЕТЯГУВАННЯ ]] --
+-- [[ ГОЛОВНА ЛОГІКА ВІДКРИТТЯ ]] --
 local function ToggleHub()
+    MainFrame.Visible = not MainFrame.Visible
+    print("Статус меню: ", MainFrame.Visible) -- Виведе в консоль F9
+    
     if MainFrame.Visible then
-        MainFrame:TweenSize(UDim2.new(0, 480, 0, 280), "In", "Quart", 0.2, true)
-        task.wait(0.2)
-        MainFrame.Visible = false
-    else
-        MainFrame.Visible = true
         MainFrame:TweenSize(UDim2.new(0, 500, 0, 300), "Out", "Back", 0.3, true)
     end
 end
 
-LogoButton.MouseButton1Click:Connect(ToggleHub)
-
--- Dragging для MainFrame
-local d1, s1, st1
-MainFrame.InputBegan:Connect(function(i)
-    if i.UserInputType == Enum.UserInputType.MouseButton1 then d1 = true st1 = i.Position s1 = MainFrame.Position end
+-- Використовуємо MouseButton1Down замість Click для кращого відгуку
+LogoButton.MouseButton1Down:Connect(function()
+    ToggleHub()
 end)
-UserInputService.InputChanged:Connect(function(i)
-    if d1 and i.UserInputType == Enum.UserInputType.MouseMovement then
-        local delta = i.Position - st1
-        MainFrame.Position = UDim2.new(s1.X.Scale, s1.X.Offset + delta.X, s1.Y.Scale, s1.Y.Offset + delta.Y)
+
+-- ПЕРЕТЯГУВАННЯ КНОПКИ (Drag)
+local dragging, dragInput, dragStart, startPos
+LogoButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = LogoButton.Position
     end
 end)
-MainFrame.InputEnded:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then d1 = false end end)
-
--- Dragging для Logo
-local d2, s2, st2
-LogoButton.InputBegan:Connect(function(i)
-    if i.UserInputType == Enum.UserInputType.MouseButton1 then d2 = true st2 = i.Position s2 = LogoButton.Position end
-end)
-UserInputService.InputChanged:Connect(function(i)
-    if d2 and i.UserInputType == Enum.UserInputType.MouseMovement then
-        local delta = i.Position - st2
-        LogoButton.Position = UDim2.new(s2.X.Scale, s2.X.Offset + delta.X, s2.Y.Scale, s2.Y.Offset + delta.Y)
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        LogoButton.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
     end
 end)
-LogoButton.InputEnded:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then d2 = false end end)
+LogoButton.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
+
+print("Hub loaded! Натисни на логотип знизу.")
