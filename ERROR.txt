@@ -1,75 +1,70 @@
 local LP = game:GetService("Players").LocalPlayer
 local UIS = game:GetService("UserInputService")
-local UI_NAME = "H2K4R_V12_FINAL"
+local UI_NAME = "H2K4R_V14_NEON"
 
+-- Очистка старого ГУІ
 pcall(function()
     if LP.PlayerGui:FindFirstChild(UI_NAME) then LP.PlayerGui[UI_NAME]:Destroy() end
 end)
 
-local sg = Instance.new("ScreenGui")
+local sg = Instance.new("ScreenGui", LP:WaitForChild("PlayerGui"))
 sg.Name = UI_NAME
-sg.Parent = LP:WaitForChild("PlayerGui")
 sg.ResetOnSpawn = false
 
--- [[ ВІКНО ]] --
+-- [[ ГОЛОВНЕ ВІКНО ]] --
 local Frame = Instance.new("Frame", sg)
-Frame.Size = UDim2.new(0, 320, 0, 400)
-Frame.Position = UDim2.new(0.5, -160, 0.5, -200)
-Frame.BackgroundColor3 = Color3.fromRGB(15, 0, 0)
+Frame.Size = UDim2.new(0, 320, 0, 420)
+Frame.Position = UDim2.new(0.5, -160, 0.5, -210)
+Frame.BackgroundColor3 = Color3.fromRGB(15, 0, 15) -- Темно-фіолетовий під твій сет
 Frame.BorderSizePixel = 2
-Frame.BorderColor3 = Color3.fromRGB(255, 0, 0)
+Frame.BorderColor3 = Color3.fromRGB(150, 0, 255) -- Неонова рамка
 Frame.Visible = false 
 Frame.Active = true
 
 -- ЗАГОЛОВОК
 local Title = Instance.new("TextButton", Frame)
 Title.Size = UDim2.new(1, 0, 0, 35)
-Title.BackgroundColor3 = Color3.fromRGB(80, 0, 0)
-Title.Text = "H2K4R HUB V12"
+Title.BackgroundColor3 = Color3.fromRGB(60, 0, 100)
+Title.Text = "H2K4R HUB: NEON EDITION"
 Title.TextColor3 = Color3.new(1, 1, 1)
 Title.Font = Enum.Font.Code
-Title.TextSize = 16
+Title.TextSize = 15
 
 -- [[ ТАБИ ]] --
-local TabFrame = Instance.new("Frame", Frame)
-TabFrame.Size = UDim2.new(1, 0, 0, 35)
-TabFrame.Position = UDim2.new(0, 0, 0, 35)
-TabFrame.BackgroundColor3 = Color3.fromRGB(30, 0, 0)
-
 local function CreateTabBtn(text, pos, width)
-    local b = Instance.new("TextButton", TabFrame)
-    b.Size = UDim2.new(width, 0, 1, 0)
-    b.Position = UDim2.new(pos, 0, 0, 0)
+    local b = Instance.new("TextButton", Frame)
+    b.Size = UDim2.new(width, -4, 0, 30)
+    b.Position = UDim2.new(pos, 2, 0, 40)
     b.Text = text
-    b.BackgroundColor3 = Color3.fromRGB(20, 0, 0)
+    b.BackgroundColor3 = Color3.fromRGB(30, 0, 50)
     b.TextColor3 = Color3.new(1, 1, 1)
     b.Font = Enum.Font.Code
     b.TextSize = 10
     return b
 end
 
-local MainTabBtn = CreateTabBtn("MAIN", 0, 0.33)
-local FeTabBtn = CreateTabBtn("FE SCRIPTS", 0.33, 0.33)
-local HubTabBtn = CreateTabBtn("HUB", 0.66, 0.34)
+local MainBtn = CreateTabBtn("MAIN", 0, 0.33)
+local FeBtn = CreateTabBtn("FE/SWORDS", 0.33, 0.33)
+local HubBtn = CreateTabBtn("HUBS", 0.66, 0.34)
 
 local function CreateScroll()
     local s = Instance.new("ScrollingFrame", Frame)
     s.Size = UDim2.new(1, -10, 1, -85)
     s.Position = UDim2.new(0, 5, 0, 80)
     s.BackgroundTransparency = 1; s.Visible = false
-    s.CanvasSize = UDim2.new(0, 0, 0, 500); s.ScrollBarThickness = 3
+    s.CanvasSize = UDim2.new(0, 0, 0, 550); s.ScrollBarThickness = 3
     local l = Instance.new("UIListLayout", s); l.Padding = UDim.new(0, 5)
     return s
 end
 
 local MainS = CreateScroll(); local FeS = CreateScroll(); local HubS = CreateScroll()
-MainS.Visible = true; MainTabBtn.BackgroundColor3 = Color3.fromRGB(80, 0, 0)
+MainS.Visible = true; MainBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 255)
 
 local function Add(name, url, parent)
     local b = Instance.new("TextButton", parent)
-    b.Size = UDim2.new(1, -5, 0, 35); b.BackgroundColor3 = Color3.fromRGB(30, 0, 0)
-    b.BorderSizePixel = 1; b.BorderColor3 = Color3.fromRGB(200, 0, 0)
-    b.Text = "> " .. name; b.TextColor3 = Color3.new(1, 1, 1); b.Font = Enum.Font.Code; b.TextSize = 11
+    b.Size = UDim2.new(1, -5, 0, 35); b.BackgroundColor3 = Color3.fromRGB(25, 0, 40)
+    b.BorderSizePixel = 1; b.BorderColor3 = Color3.fromRGB(150, 0, 255)
+    b.Text = " " .. name; b.TextColor3 = Color3.new(1, 1, 1); b.Font = Enum.Font.Code; b.TextSize = 11
     b.TextXAlignment = Enum.TextXAlignment.Left
     b.MouseButton1Down:Connect(function()
         if type(url) == "string" then loadstring(game:HttpGet(url))() else url() end
@@ -77,30 +72,32 @@ local function Add(name, url, parent)
 end
 
 -- [[ MAIN ]] --
-Add("INF JUMP", function() UIS.JumpRequest:Connect(function() if LP.Character then LP.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping") end end) end, MainS)
-Add("ESP UNIVERSAL", "https://raw.githubusercontent.com/pika-scripts/Universal-ESP/main/Script.lua", MainS)
 Add("INFINITE YIELD", "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source", MainS)
+Add("ANTI-AFK", function() local vu = game:GetService("VirtualUser"); game:GetService("Players").LocalPlayer.Idled:Connect(function() vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame); wait(1); vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame) end) end, MainS)
+Add("INF JUMP", function() UIS.JumpRequest:Connect(function() if LP.Character then LP.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping") end end) end, MainS)
 
--- [[ FE SCRIPTS ]] --
-Add("ANGEL (Giant FE)", "https://raw.githubusercontent.com/marcus640/myscriptrobloxLOL/main/theangel.txt", FeS)
-Add("GALE FIGHTER (FE)", "https://raw.githubusercontent.com/sinret/rbxscript.com-scripts-reuploads-/main/gale", FeS)
-Add("SWORD MONK (Physical)", "https://pastefy.app/59mJGQGe/raw", FeS)
-Add("REANIMATE (FIX)", "https://raw.githubusercontent.com/Mokiros/R6-Scripts/main/Main", FeS)
+-- [[ FE SCRIPTS / SWORDS ]] --
+Add("FIX ACCESSORIES (R6 FIRST)", "https://raw.githubusercontent.com/Mokiros/R6-Scripts/main/Main", FeS)
+Add("GALE FIGHTER (Neon)", "https://raw.githubusercontent.com/FilteringEnabled/GaleFighter/main/GaleFighter.lua", FeS)
+Add("SWORD GLITCHER (Gale V2)", "https://raw.githubusercontent.com/sinret/rbxscript.com-scripts-reuploads-/main/gale", FeS)
+Add("ANGEL GIANT (FE)", "https://raw.githubusercontent.com/marcus640/myscriptrobloxLOL/main/theangel.txt", FeS)
+Add("MOON CRESCENT (Big)", "https://raw.githubusercontent.com/TheNoobScript/MoonCrescent/main/Main.lua", FeS)
+Add("BRIGHTNESS (Small)", "https://raw.githubusercontent.com/Batz-z/Scripts/main/Brightness", FeS)
 
--- [[ HUB SECTION ]] --
-Add("XVC HUB", "https://pastebin.com/raw/Piw5bqGq", HubS)
+-- [[ HUBS ]] --
+Add("XVC HUB (Working)", "https://pastebin.com/raw/Piw5bqGq", HubS)
 Add("SYPCER FE HUB", "https://raw.githubusercontent.com/sypcerr/scripts/main/scripts.lua", HubS)
-Add("SWAMP MONSTER", "https://pastefy.app/2tC7nRAK/raw", HubS)
+Add("PRISON LIFE ADMIN", "https://raw.githubusercontent.com/ToraIsMe/ToraIsMe/main/0PrisonLife", HubS)
 
 -- [[ ЛОГІКА ТАБІВ ]] --
 local function ShowTab(tab, btn)
     MainS.Visible = false; FeS.Visible = false; HubS.Visible = false
-    MainTabBtn.BackgroundColor3 = Color3.fromRGB(20, 0, 0); FeTabBtn.BackgroundColor3 = Color3.fromRGB(20, 0, 0); HubTabBtn.BackgroundColor3 = Color3.fromRGB(20, 0, 0)
-    tab.Visible = true; btn.BackgroundColor3 = Color3.fromRGB(80, 0, 0)
+    MainBtn.BackgroundColor3 = Color3.fromRGB(30, 0, 50); FeBtn.BackgroundColor3 = Color3.fromRGB(30, 0, 50); HubBtn.BackgroundColor3 = Color3.fromRGB(30, 0, 50)
+    tab.Visible = true; btn.BackgroundColor3 = Color3.fromRGB(150, 0, 255)
 end
-MainTabBtn.MouseButton1Down:Connect(function() ShowTab(MainS, MainTabBtn) end)
-FeTabBtn.MouseButton1Down:Connect(function() ShowTab(FeS, FeTabBtn) end)
-HubTabBtn.MouseButton1Down:Connect(function() ShowTab(HubS, HubTabBtn) end)
+MainBtn.MouseButton1Down:Connect(function() ShowTab(MainS, MainBtn) end)
+FeBtn.MouseButton1Down:Connect(function() ShowTab(FeS, FeBtn) end)
+HubBtn.MouseButton1Down:Connect(function() ShowTab(HubS, HubBtn) end)
 
 -- РУХ ГУІ
 local drag, dStart, sPos
@@ -111,7 +108,7 @@ UIS.InputEnded:Connect(function(i) if i.UserInputType == Enum.UserInputType.Mous
 
 -- КНОПКА ВІДКРИТТЯ
 local OpenBtn = Instance.new("TextButton", sg)
-OpenBtn.Size = UDim2.new(0, 80, 0, 40); OpenBtn.Position = UDim2.new(0, 5, 0.5, -20) 
-OpenBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 0); OpenBtn.Text = "[ OPEN ]"; OpenBtn.TextColor3 = Color3.new(1, 1, 1)
-OpenBtn.Font = Enum.Font.Code; OpenBtn.BorderSizePixel = 2; OpenBtn.BorderColor3 = Color3.new(0, 0, 0)
-OpenBtn.MouseButton1Down:Connect(function() Frame.Visible = not Frame.Visible; OpenBtn.Text = Frame.Visible and "[ CLOSE ]" or "[ OPEN ]" end)
+OpenBtn.Size = UDim2.new(0, 70, 0, 30); OpenBtn.Position = UDim2.new(0, 10, 0.5, 0) 
+OpenBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 255); OpenBtn.Text = "H2K4R"; OpenBtn.TextColor3 = Color3.new(1, 1, 1)
+OpenBtn.Font = Enum.Font.Code; OpenBtn.BorderSizePixel = 2
+OpenBtn.MouseButton1Down:Connect(function() Frame.Visible = not Frame.Visible end)
