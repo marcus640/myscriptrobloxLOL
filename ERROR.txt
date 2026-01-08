@@ -1,8 +1,8 @@
 local LP = game:GetService("Players").LocalPlayer
 local UIS = game:GetService("UserInputService")
-local UI_NAME = "H2K4R_SECTIONS"
+local UI_NAME = "H2K4R_TABS_V2"
 
--- Видаляємо старе
+-- Видалення старого
 pcall(function()
     if LP.PlayerGui:FindFirstChild(UI_NAME) then LP.PlayerGui[UI_NAME]:Destroy() end
 end)
@@ -22,7 +22,7 @@ Frame.BorderColor3 = Color3.fromRGB(255, 0, 0)
 Frame.Visible = false 
 Frame.Active = true
 
--- ЗАГОЛОВОК
+-- ЗАГОЛОВОК (ПЕРЕТЯГУВАННЯ)
 local Title = Instance.new("TextButton", Frame)
 Title.Size = UDim2.new(1, 0, 0, 35)
 Title.BackgroundColor3 = Color3.fromRGB(60, 0, 0)
@@ -33,7 +33,7 @@ Title.TextSize = 16
 Title.BorderSizePixel = 0
 Title.AutoButtonColor = false
 
--- [[ КНОПКИ ПЕРЕМИКАННЯ СЕКЦІЙ ]] --
+-- ПАНЕЛЬ ТАБІВ
 local TabFrame = Instance.new("Frame", Frame)
 TabFrame.Size = UDim2.new(1, 0, 0, 35)
 TabFrame.Position = UDim2.new(0, 0, 0, 35)
@@ -43,7 +43,7 @@ TabFrame.BorderSizePixel = 0
 local MainTabBtn = Instance.new("TextButton", TabFrame)
 MainTabBtn.Size = UDim2.new(0.5, 0, 1, 0)
 MainTabBtn.Text = "MAIN"
-MainTabBtn.BackgroundColor3 = Color3.fromRGB(50, 0, 0)
+MainTabBtn.BackgroundColor3 = Color3.fromRGB(50, 0, 0) -- Активний колір
 MainTabBtn.TextColor3 = Color3.new(1, 1, 1)
 MainTabBtn.Font = Enum.Font.Code
 
@@ -55,7 +55,7 @@ VisualsTabBtn.BackgroundColor3 = Color3.fromRGB(20, 0, 0)
 VisualsTabBtn.TextColor3 = Color3.new(1, 1, 1)
 VisualsTabBtn.Font = Enum.Font.Code
 
--- КОНТЕЙНЕРИ ДЛЯ СКРИПТІВ
+-- СКРОЛЛ КОНТЕЙНЕРИ
 local MainScroll = Instance.new("ScrollingFrame", Frame)
 MainScroll.Size = UDim2.new(1, -10, 1, -80)
 MainScroll.Position = UDim2.new(0, 5, 0, 75)
@@ -72,8 +72,8 @@ VisualsScroll.Visible = false
 VisualsScroll.CanvasSize = UDim2.new(0, 0, 0, 500)
 VisualsScroll.ScrollBarThickness = 3
 
-local function AddLayout(scroll)
-    local l = Instance.new("UIListLayout", scroll)
+local function AddLayout(s)
+    local l = Instance.new("UIListLayout", s)
     l.Padding = UDim.new(0, 5)
 end
 AddLayout(MainScroll)
@@ -101,11 +101,11 @@ local function Add(name, url, parent)
     end)
 end
 
--- [[ ВКЛАДКА: MAIN ]] --
+-- [[ СЕКЦІЯ: MAIN ]] --
 Add("SUPER RING V6", "https://raw.githubusercontent.com/chesslovers69/Super-ring-parts-v6/refs/heads/main/Bylukaslol", MainScroll)
 Add("FLY GUI V3", "https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt", MainScroll)
 Add("INFINITE JUMP", function()
-    local c; c = UIS.JumpRequest:Connect(function()
+    local j; j = UIS.JumpRequest:Connect(function()
         if LP.Character then LP.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping") end
     end)
 end, MainScroll)
@@ -120,46 +120,44 @@ end, MainScroll)
 Add("PVP SHOOTER", "https://raw.githubusercontent.com/eugenevir/guihot/main/f.txt", MainScroll)
 Add("INFINITE YIELD", "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source", MainScroll)
 
--- [[ ВКЛАДКА: VISUALS ]] --
-Add("MY CUSTOM VISUALS", "https://raw.githubusercontent.com/marcus640/myscriptrobloxLOL/main/script.lua", VisualsScroll)
+-- [[ СЕКЦІЯ: VISUALS ]] --
+-- Твій новий скрипт The Angel (Raw посилання)
+Add("THE ANGEL", "https://raw.githubusercontent.com/marcus640/myscriptrobloxLOL/main/theangel.txt", VisualsScroll)
+-- Твій попередній скрипт
+Add("MY CUSTOM SCRIPT", "https://raw.githubusercontent.com/marcus640/myscriptrobloxLOL/main/script.lua", VisualsScroll)
 Add("ESP (See Players)", "https://raw.githubusercontent.com/pika-scripts/Universal-ESP/main/Script.lua", VisualsScroll)
 Add("FULLBRIGHT", function()
     game:GetService("Lighting").Brightness = 2
     game:GetService("Lighting").ClockTime = 14
-    game:GetService("Lighting").FogEnd = 100000
     game:GetService("Lighting").GlobalShadows = false
 end, VisualsScroll)
 Add("ANIMATIONS", "https://raw.githubusercontent.com/7yd7/Hub/refs/heads/Branch/GUIS/Emotes.lua", VisualsScroll)
 
--- [[ ЛОГІКА ТАБІВ ]] --
+-- [[ ЛОГІКА ПЕРЕМИКАННЯ ]] --
 MainTabBtn.MouseButton1Down:Connect(function()
-    MainScroll.Visible = true
-    VisualsScroll.Visible = false
+    MainScroll.Visible, VisualsScroll.Visible = true, false
     MainTabBtn.BackgroundColor3 = Color3.fromRGB(50, 0, 0)
     VisualsTabBtn.BackgroundColor3 = Color3.fromRGB(20, 0, 0)
 end)
 
 VisualsTabBtn.MouseButton1Down:Connect(function()
-    MainScroll.Visible = false
-    VisualsScroll.Visible = true
+    MainScroll.Visible, VisualsScroll.Visible = false, true
     MainTabBtn.BackgroundColor3 = Color3.fromRGB(20, 0, 0)
     VisualsTabBtn.BackgroundColor3 = Color3.fromRGB(50, 0, 0)
 end)
 
--- РУХ МЕНЮ
-local dragging, dragStart, startPos
-Title.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true dragStart = input.Position startPos = Frame.Position
+-- РУХ (ЗА ЗАГОЛОВОК)
+local drag, dStart, sPos
+Title.InputBegan:Connect(function(i)
+    if i.UserInputType == Enum.UserInputType.MouseButton1 then drag = true dStart = i.Position sPos = Frame.Position end
+end)
+UIS.InputChanged:Connect(function(i)
+    if drag and i.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = i.Position - dStart
+        Frame.Position = UDim2.new(sPos.X.Scale, sPos.X.Offset + delta.X, sPos.Y.Scale, sPos.Y.Offset + delta.Y)
     end
 end)
-UIS.InputChanged:Connect(function(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        local delta = input.Position - dragStart
-        Frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
-end)
-UIS.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end end)
+UIS.InputEnded:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then drag = false end end)
 
 -- КНОПКА ВІДКРИТТЯ
 local OpenBtn = Instance.new("TextButton", sg)
