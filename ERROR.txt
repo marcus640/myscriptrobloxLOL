@@ -1,151 +1,110 @@
 local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
+local UIS = game:GetService("UserInputService")
 local LP = Players.LocalPlayer
 local PlayerGui = LP:WaitForChild("PlayerGui")
 
--- Очищення старих версій
-if PlayerGui:FindFirstChild("GhostStyleHub") then
-    PlayerGui.GhostStyleHub:Destroy()
+-- Видаляємо стару версію
+if PlayerGui:FindFirstChild("GhostHub_Fixed") then
+    PlayerGui.GhostHub_Fixed:Destroy()
 end
 
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "GhostStyleHub"
+ScreenGui.Name = "GhostHub_Fixed"
 ScreenGui.Parent = PlayerGui
 ScreenGui.ResetOnSpawn = false
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- [[ КОЛЬОРИ ]] --
-local AccentColor = Color3.fromRGB(170, 0, 255)
-local MainColor = Color3.fromRGB(20, 20, 20)
-
--- [[ 1. КНОПКА ВІДКРИТТЯ (БЕЗ ФОТО) ]] --
+-- [[ КНОПКА G ]] --
 local ToggleBtn = Instance.new("TextButton")
-ToggleBtn.Name = "MainToggle"
+ToggleBtn.Name = "ToggleBtn"
 ToggleBtn.Parent = ScreenGui
-ToggleBtn.BackgroundColor3 = MainColor
-ToggleBtn.Size = UDim2.new(0, 60, 0, 60)
-ToggleBtn.Position = UDim2.new(0.02, 0, 0.7, 0)
+ToggleBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+ToggleBtn.Position = UDim2.new(0, 100, 0, 100) -- Початкова позиція
+ToggleBtn.Size = UDim2.new(0, 55, 0, 55)
 ToggleBtn.Text = "G"
-ToggleBtn.TextColor3 = AccentColor
+ToggleBtn.TextColor3 = Color3.fromRGB(170, 0, 255)
 ToggleBtn.Font = Enum.Font.GothamBold
-ToggleBtn.TextSize = 30
-ToggleBtn.ZIndex = 100
+ToggleBtn.TextSize = 25
+ToggleBtn.Active = true
+ToggleBtn.Draggable = true -- Вмикаємо стандартне перетягування Roblox
 
-local BtnCorner = Instance.new("UICorner", ToggleBtn)
-BtnCorner.CornerRadius = UDim.new(1, 0)
+local Corner = Instance.new("UICorner", ToggleBtn)
+Corner.CornerRadius = UDim.new(1, 0)
 
-local BtnStroke = Instance.new("UIStroke", ToggleBtn)
-BtnStroke.Color = AccentColor
-BtnStroke.Thickness = 3
+local Stroke = Instance.new("UIStroke", ToggleBtn)
+Stroke.Color = Color3.fromRGB(170, 0, 255)
+Stroke.Thickness = 2
 
--- [[ 2. ГОЛОВНЕ ВІКНО ]] --
+-- [[ ГОЛОВНЕ МЕНЮ ]] --
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Parent = ScreenGui
-MainFrame.BackgroundColor3 = MainColor
-MainFrame.Position = UDim2.new(0.5, -250, 0.5, -150)
-MainFrame.Size = UDim2.new(0, 500, 0, 300)
-MainFrame.Visible = false
-MainFrame.ClipsDescendants = true
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+MainFrame.Position = UDim2.new(0.5, -200, 0.5, -125)
+MainFrame.Size = UDim2.new(0, 400, 0, 250)
+MainFrame.Visible = false -- Спочатку сховано
+MainFrame.Active = true
+MainFrame.Draggable = true -- Меню теж можна рухати
 
-Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 12)
-local MainStroke = Instance.new("UIStroke", MainFrame)
-MainStroke.Color = Color3.fromRGB(50, 50, 50)
+Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 10)
+local MStroke = Instance.new("UIStroke", MainFrame)
+MStroke.Color = Color3.fromRGB(170, 0, 255)
+MStroke.Thickness = 1
 
 -- Sidebar
 local Sidebar = Instance.new("Frame", MainFrame)
-Sidebar.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-Sidebar.Size = UDim2.new(0, 120, 1, 0)
+Sidebar.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+Sidebar.Size = UDim2.new(0, 100, 1, 0)
 local Title = Instance.new("TextLabel", Sidebar)
 Title.Text = "GHOST"
-Title.TextColor3 = AccentColor
+Title.TextColor3 = Color3.fromRGB(170, 0, 255)
 Title.Font = Enum.Font.GothamBold
-Title.TextSize = 20
-Title.Size = UDim2.new(1, 0, 0, 50)
+Title.TextSize = 18
+Title.Size = UDim2.new(1, 0, 0, 40)
 Title.BackgroundTransparency = 1
 
--- Scroll Area
+-- Список кнопок (Scrolling)
 local Scroll = Instance.new("ScrollingFrame", MainFrame)
-Scroll.Position = UDim2.new(0, 130, 0, 10)
-Scroll.Size = UDim2.new(1, -140, 1, -20)
+Scroll.Position = UDim2.new(0, 110, 0, 10)
+Scroll.Size = UDim2.new(1, -120, 1, -20)
 Scroll.BackgroundTransparency = 1
-Scroll.CanvasSize = UDim2.new(0, 0, 0, 600)
+Scroll.CanvasSize = UDim2.new(0, 0, 0, 400)
 Scroll.ScrollBarThickness = 2
-Scroll.ScrollBarImageColor3 = AccentColor
+Scroll.ScrollBarImageColor3 = Color3.fromRGB(170, 0, 255)
 
-local List = Instance.new("UIListLayout", Scroll)
-List.Spacing = UDim.new(0, 8)
+local Layout = Instance.new("UIListLayout", Scroll)
+Layout.Spacing = UDim.new(0, 7)
 
--- ФУНКЦІЯ КНОПОК
-local function CreateButton(txt, cb)
+-- Функція додавання кнопок
+local function AddBtn(name, callback)
     local b = Instance.new("TextButton", Scroll)
-    b.Size = UDim2.new(0.95, 0, 0, 40)
-    b.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-    b.Text = txt
+    b.Size = UDim2.new(0.95, 0, 0, 35)
+    b.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    b.Text = name
     b.TextColor3 = Color3.new(1, 1, 1)
     b.Font = Enum.Font.Gotham
     b.TextSize = 14
     Instance.new("UICorner", b)
-    b.MouseButton1Click:Connect(cb)
+    b.MouseButton1Click:Connect(callback)
 end
 
--- КНОПКИ
-CreateButton("Super Ring V6", function()
+-- ТВОЇ СКРИПТИ
+AddBtn("Super Ring V6", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/chesslovers69/Super-ring-parts-v6/refs/heads/main/Bylukaslol"))()
 end)
 
-CreateButton("Fly Hack GUI", function()
+AddBtn("Fly Hack GUI", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
 end)
 
-CreateButton("Infinite Yield", function()
+AddBtn("Infinite Yield", function()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
 end)
 
--- [[ ЛОГІКА DRAG ТА CLICK ]] --
-local dragging = false
-local dragStart, startPos
-local moveConn
-
-local function update(input)
-    local delta = input.Position - dragStart
-    ToggleBtn.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-end
-
-ToggleBtn.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        dragging = false -- Скидаємо прапор при натисканні
-        dragStart = input.Position
-        startPos = ToggleBtn.Position
-        
-        moveConn = input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                moveConn:Disconnect()
-            end
-        end)
-    end
+-- [[ ГОЛОВНИЙ ФІКС: ВІДКРИТТЯ ]] --
+-- Використовуємо Activated, воно найкраще працює з перетягуванням
+ToggleBtn.Activated:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible
 end)
 
-UserInputService.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-        if dragStart then
-            local mag = (input.Position - dragStart).Magnitude
-            if mag > 5 then -- Якщо мишка посунулась більше ніж на 5 пікселів - це Drag
-                dragging = true
-                update(input)
-            end
-        end
-    end
-end)
-
-UserInputService.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        if not dragging and dragStart then
-            -- Якщо не рухали кнопку, то це просто КЛІК
-            MainFrame.Visible = not MainFrame.Visible
-        end
-        dragStart = nil
-    end
-end)
-
-print("Hub Loaded! Натисніть на 'G' щоб відкрити.")
+print("Ghost Hub Fixed Loaded!")
