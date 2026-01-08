@@ -1,10 +1,10 @@
 local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
 local LP = Players.LocalPlayer
 local PlayerGui = LP:WaitForChild("PlayerGui")
 
--- Очищення попередніх версій перед запуском
+-- Очищення старих версій
 if PlayerGui:FindFirstChild("GhostStyleHub") then
     PlayerGui.GhostStyleHub:Destroy()
 end
@@ -13,142 +13,139 @@ local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "GhostStyleHub"
 ScreenGui.Parent = PlayerGui
 ScreenGui.ResetOnSpawn = false
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- [[ НАЛАШТУВАННЯ ]] --
-local MainColor = Color3.fromRGB(15, 15, 15)
+-- [[ КОЛЬОРИ ]] --
 local AccentColor = Color3.fromRGB(170, 0, 255)
-local LogoURL = "rbxassetid://0" -- Полиш так або встав своє
+local MainColor = Color3.fromRGB(20, 20, 20)
 
--- [[ 1. КНОПКА-ЛОГОТИП ]] --
-local LogoButton = Instance.new("ImageButton")
-LogoButton.Name = "OpenCloseBtn"
-LogoButton.Parent = ScreenGui
-LogoButton.BackgroundColor3 = MainColor
-LogoButton.BackgroundTransparency = 0.2
-LogoButton.Position = UDim2.new(0.02, 0, 0.75, 0)
-LogoButton.Size = UDim2.new(0, 60, 0, 60)
-LogoButton.Image = LogoURL
-LogoButton.ZIndex = 100 -- Дуже високий пріоритет
+-- [[ 1. КНОПКА ВІДКРИТТЯ (БЕЗ ФОТО) ]] --
+local ToggleBtn = Instance.new("TextButton")
+ToggleBtn.Name = "MainToggle"
+ToggleBtn.Parent = ScreenGui
+ToggleBtn.BackgroundColor3 = MainColor
+ToggleBtn.Size = UDim2.new(0, 60, 0, 60)
+ToggleBtn.Position = UDim2.new(0.02, 0, 0.7, 0)
+ToggleBtn.Text = "G"
+ToggleBtn.TextColor3 = AccentColor
+ToggleBtn.Font = Enum.Font.GothamBold
+ToggleBtn.TextSize = 30
+ToggleBtn.ZIndex = 100
 
-local LogoCorner = Instance.new("UICorner", LogoButton)
-LogoCorner.CornerRadius = UDim.new(1, 0)
+local BtnCorner = Instance.new("UICorner", ToggleBtn)
+BtnCorner.CornerRadius = UDim.new(1, 0)
 
-local LogoStroke = Instance.new("UIStroke", LogoButton)
-LogoStroke.Color = AccentColor
-LogoStroke.Thickness = 3
+local BtnStroke = Instance.new("UIStroke", ToggleBtn)
+BtnStroke.Color = AccentColor
+BtnStroke.Thickness = 3
 
 -- [[ 2. ГОЛОВНЕ ВІКНО ]] --
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Parent = ScreenGui
 MainFrame.BackgroundColor3 = MainColor
-MainFrame.BackgroundTransparency = 0.1
 MainFrame.Position = UDim2.new(0.5, -250, 0.5, -150)
 MainFrame.Size = UDim2.new(0, 500, 0, 300)
-MainFrame.Visible = false -- Сховано за замовчуванням
+MainFrame.Visible = false
 MainFrame.ClipsDescendants = true
-MainFrame.ZIndex = 50
 
-Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 10)
+Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 12)
+local MainStroke = Instance.new("UIStroke", MainFrame)
+MainStroke.Color = Color3.fromRGB(50, 50, 50)
 
--- [[ 3. SIDEBAR (Логотип та назва) ]] --
-local Sidebar = Instance.new("Frame")
-Sidebar.Name = "Sidebar"
-Sidebar.Parent = MainFrame
-Sidebar.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+-- Sidebar
+local Sidebar = Instance.new("Frame", MainFrame)
+Sidebar.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 Sidebar.Size = UDim2.new(0, 120, 1, 0)
+local Title = Instance.new("TextLabel", Sidebar)
+Title.Text = "GHOST"
+Title.TextColor3 = AccentColor
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 20
+Title.Size = UDim2.new(1, 0, 0, 50)
+Title.BackgroundTransparency = 1
 
-local HubTitle = Instance.new("TextLabel", Sidebar)
-HubTitle.Text = "GHOST"
-HubTitle.Size = UDim2.new(1, 0, 0, 50)
-HubTitle.BackgroundTransparency = 1
-HubTitle.TextColor3 = AccentColor
-HubTitle.Font = Enum.Font.GothamBold
-HubTitle.TextSize = 22
+-- Scroll Area
+local Scroll = Instance.new("ScrollingFrame", MainFrame)
+Scroll.Position = UDim2.new(0, 130, 0, 10)
+Scroll.Size = UDim2.new(1, -140, 1, -20)
+Scroll.BackgroundTransparency = 1
+Scroll.CanvasSize = UDim2.new(0, 0, 0, 600)
+Scroll.ScrollBarThickness = 2
+Scroll.ScrollBarImageColor3 = AccentColor
 
--- [[ 4. SCROLLING AREA ]] --
-local ScrollFrame = Instance.new("ScrollingFrame")
-ScrollFrame.Parent = MainFrame
-ScrollFrame.Position = UDim2.new(0, 130, 0, 10)
-ScrollFrame.Size = UDim2.new(1, -140, 1, -20)
-ScrollFrame.BackgroundTransparency = 1
-ScrollFrame.BorderSizePixel = 0
-ScrollFrame.ScrollBarThickness = 4
-ScrollFrame.ScrollBarImageColor3 = AccentColor
-ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, 500) -- Дозволяє скролити вниз
+local List = Instance.new("UIListLayout", Scroll)
+List.Spacing = UDim.new(0, 8)
 
-local UIList = Instance.new("UIListLayout", ScrollFrame)
-UIList.Spacing = UDim.new(0, 10)
-UIList.Padding = Padding or UDim.new(0, 5)
-
--- ФУНКЦІЯ СТВОРЕННЯ КНОПОК
-local function AddButton(name, callback)
-    local Btn = Instance.new("TextButton")
-    Btn.Parent = ScrollFrame
-    Btn.Size = UDim2.new(0.95, 0, 0, 45)
-    Btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    Btn.Text = "  " .. name
-    Btn.TextColor3 = Color3.new(1, 1, 1)
-    Btn.Font = Enum.Font.Gotham
-    Btn.TextSize = 14
-    Btn.TextXAlignment = Enum.TextXAlignment.Left
-    
-    Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 6)
-    
-    Btn.MouseButton1Click:Connect(function()
-        print("Натиснуто кнопку: " .. name)
-        callback()
-    end)
+-- ФУНКЦІЯ КНОПОК
+local function CreateButton(txt, cb)
+    local b = Instance.new("TextButton", Scroll)
+    b.Size = UDim2.new(0.95, 0, 0, 40)
+    b.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    b.Text = txt
+    b.TextColor3 = Color3.new(1, 1, 1)
+    b.Font = Enum.Font.Gotham
+    b.TextSize = 14
+    Instance.new("UICorner", b)
+    b.MouseButton1Click:Connect(cb)
 end
 
--- [[ СПИСОК СКРИПТІВ ]] --
-AddButton("Super Ring V6", function()
+-- КНОПКИ
+CreateButton("Super Ring V6", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/chesslovers69/Super-ring-parts-v6/refs/heads/main/Bylukaslol"))()
 end)
 
-AddButton("Fly Hack GUI", function()
+CreateButton("Fly Hack GUI", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
 end)
 
-AddButton("Infinite Yield", function()
+CreateButton("Infinite Yield", function()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
 end)
 
--- [[ ГОЛОВНА ЛОГІКА ВІДКРИТТЯ ]] --
-local function ToggleHub()
-    MainFrame.Visible = not MainFrame.Visible
-    print("Статус меню: ", MainFrame.Visible) -- Виведе в консоль F9
-    
-    if MainFrame.Visible then
-        MainFrame:TweenSize(UDim2.new(0, 500, 0, 300), "Out", "Back", 0.3, true)
-    end
+-- [[ ЛОГІКА DRAG ТА CLICK ]] --
+local dragging = false
+local dragStart, startPos
+local moveConn
+
+local function update(input)
+    local delta = input.Position - dragStart
+    ToggleBtn.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
 end
 
--- Використовуємо MouseButton1Down замість Click для кращого відгуку
-LogoButton.MouseButton1Down:Connect(function()
-    ToggleHub()
-end)
-
--- ПЕРЕТЯГУВАННЯ КНОПКИ (Drag)
-local dragging, dragInput, dragStart, startPos
-LogoButton.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
+ToggleBtn.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = false -- Скидаємо прапор при натисканні
         dragStart = input.Position
-        startPos = LogoButton.Position
-    end
-end)
-UserInputService.InputChanged:Connect(function(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        local delta = input.Position - dragStart
-        LogoButton.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
-end)
-LogoButton.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = false
+        startPos = ToggleBtn.Position
+        
+        moveConn = input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                moveConn:Disconnect()
+            end
+        end)
     end
 end)
 
-print("Hub loaded! Натисни на логотип знизу.")
+UserInputService.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        if dragStart then
+            local mag = (input.Position - dragStart).Magnitude
+            if mag > 5 then -- Якщо мишка посунулась більше ніж на 5 пікселів - це Drag
+                dragging = true
+                update(input)
+            end
+        end
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        if not dragging and dragStart then
+            -- Якщо не рухали кнопку, то це просто КЛІК
+            MainFrame.Visible = not MainFrame.Visible
+        end
+        dragStart = nil
+    end
+end)
+
+print("Hub Loaded! Натисніть на 'G' щоб відкрити.")
