@@ -35,7 +35,6 @@ PassBox.Text = ""
 PassBox.PlaceholderText = "Введіть пароль тут..."
 PassBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 PassBox.TextColor3 = Color3.new(1, 1, 1)
-PassBox.Font = Enum.Font.Code
 
 local LoginBtn = Instance.new("TextButton", LoginFrame)
 LoginBtn.Size = UDim2.new(0, 100, 0, 30)
@@ -43,7 +42,6 @@ LoginBtn.Position = UDim2.new(0.5, -50, 0.75, 0)
 LoginBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 255)
 LoginBtn.Text = "LOGIN"
 LoginBtn.TextColor3 = Color3.new(1, 1, 1)
-LoginBtn.Font = Enum.Font.Code
 
 -- [[ ГОЛОВНЕ ВІКНО ]] --
 local Frame = Instance.new("Frame", sg)
@@ -66,21 +64,18 @@ LoginBtn.MouseButton1Down:Connect(function()
     if PassBox.Text == PASS then
         LoginFrame:Destroy()
         OpenBtn.Visible = true
-        print("H2K4R Unlocked!")
     else
         PassBox.Text = ""
         PassBox.PlaceholderText = "НЕВІРНИЙ ПАРОЛЬ!"
     end
 end)
 
--- ЗАГОЛОВОК
 local Title = Instance.new("TextButton", Frame)
 Title.Size = UDim2.new(1, 0, 0, 35)
 Title.BackgroundColor3 = Color3.fromRGB(60, 0, 100)
 Title.Text = "H2K4R HUB: NEON EDITION"
 Title.TextColor3 = Color3.new(1, 1, 1)
 Title.Font = Enum.Font.Code
-Title.TextSize = 15
 
 -- [[ ТАБИ ]] --
 local function CreateTabBtn(text, pos, width)
@@ -96,7 +91,7 @@ local function CreateTabBtn(text, pos, width)
 end
 
 local MainBtn = CreateTabBtn("MAIN", 0, 0.33)
-local FeBtn = CreateTabBtn("FE/SWORDS", 0.33, 0.33)
+local PvpTabBtn = CreateTabBtn("PVP", 0.33, 0.33) -- Вкладка тепер називається PVP
 local HubBtn = CreateTabBtn("HUBS", 0.66, 0.34)
 
 local function CreateScroll()
@@ -104,12 +99,12 @@ local function CreateScroll()
     s.Size = UDim2.new(1, -10, 1, -85)
     s.Position = UDim2.new(0, 5, 0, 80)
     s.BackgroundTransparency = 1; s.Visible = false
-    s.CanvasSize = UDim2.new(0, 0, 0, 800); s.ScrollBarThickness = 3
+    s.CanvasSize = UDim2.new(0, 0, 0, 500); s.ScrollBarThickness = 3
     local l = Instance.new("UIListLayout", s); l.Padding = UDim.new(0, 5)
     return s
 end
 
-local MainS = CreateScroll(); local FeS = CreateScroll(); local HubS = CreateScroll()
+local MainS = CreateScroll(); local PvpS = CreateScroll(); local HubS = CreateScroll()
 MainS.Visible = true; MainBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 255)
 
 local function Add(name, url, parent)
@@ -119,12 +114,7 @@ local function Add(name, url, parent)
     b.Text = " " .. name; b.TextColor3 = Color3.new(1, 1, 1); b.Font = Enum.Font.Code; b.TextSize = 11
     b.TextXAlignment = Enum.TextXAlignment.Left
     b.MouseButton1Down:Connect(function()
-        if type(url) == "string" then 
-            local success, err = pcall(function() loadstring(game:HttpGet(url))() end)
-            if not success then warn("Script failed to load: "..name) end
-        else 
-            url() 
-        end
+        if type(url) == "string" then loadstring(game:HttpGet(url))() else url() end
     end)
 end
 
@@ -132,33 +122,24 @@ end
 Add("INFINITE YIELD", "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source", MainS)
 Add("ANTI-AFK", function() local vu = game:GetService("VirtualUser"); LP.Idled:Connect(function() vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame); wait(1); vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame) end) end, MainS)
 Add("INF JUMP", function() UIS.JumpRequest:Connect(function() if LP.Character then LP.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping") end end) end, MainS)
-Add("FLY (Press E)", "https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.lua", MainS)
-Add("NOCLIP (Press B)", function() local ncl = true; game:GetService("RunService").Stepped:Connect(function() if ncl then for _,v in pairs(LP.Character:GetDescendants()) do if v:IsA("BasePart") then v.CanCollide = false end end end end) end, MainS)
 
--- [[ FE SCRIPTS / SWORDS - ДОДАНО БІЛЬШЕ ]] --
-Add("FIX ACCESSORIES", "https://raw.githubusercontent.com/Mokiros/R6-Scripts/main/Main", FeS)
-Add("GALE FIGHTER", "https://raw.githubusercontent.com/FilteringEnabled/GaleFighter/main/GaleFighter.lua", FeS)
-Add("SWORD GLITCHER", "https://raw.githubusercontent.com/sinret/rbxscript.com-scripts-reuploads-/main/gale", FeS)
-Add("ANGEL GIANT", "https://raw.githubusercontent.com/marcus640/myscriptrobloxLOL/main/theangel.txt", FeS)
-Add("MOON CRESCENT", "https://raw.githubusercontent.com/TheNoobScript/MoonCrescent/main/Main.lua", FeS)
-Add("UTG V2 (FE)", "https://raw.githubusercontent.com/DizzyIsKewl/Scripts/main/UTG%20V2", FeS)
-Add("NEBULA HUB", "https://raw.githubusercontent.com/CodX-Scripts/Nebula-Hub/main/Nebula", FeS)
-Add("FE KILLER (R6)", "https://pastebin.com/raw/766Ym6Xv", FeS)
-Add("REANIMATION", "https://raw.githubusercontent.com/Mokiros/R6-Scripts/main/UniversalReanimation", FeS)
+-- [[ PVP TAB (Колишня FE) ]] --
+Add("FE SCRIPT (New)", "https://pastefy.app/59mJGQGe/raw", PvpS)
+Add("ANGEL GIANT (FE)", "https://raw.githubusercontent.com/marcus640/myscriptrobloxLOL/main/theangel.txt", PvpS)
+Add("FE", "https://raw.githubusercontent.com/sinret/rbxscript.com-scripts-reuploads-/main/gale", PvpS) -- Кнопка тепер називається FE
 
 -- [[ HUBS ]] --
 Add("XVC HUB", "https://pastebin.com/raw/Piw5bqGq", HubS)
 Add("SYPCER FE HUB", "https://raw.githubusercontent.com/sypcerr/scripts/main/scripts.lua", HubS)
-Add("VONDY HUB", "https://raw.githubusercontent.com/VondyScripts/VondyHub/main/Loader", HubS)
 
 -- ЛОГІКА ТАБІВ
 local function ShowTab(tab, btn)
-    MainS.Visible = false; FeS.Visible = false; HubS.Visible = false
-    MainBtn.BackgroundColor3 = Color3.fromRGB(30, 0, 50); FeBtn.BackgroundColor3 = Color3.fromRGB(30, 0, 50); HubBtn.BackgroundColor3 = Color3.fromRGB(30, 0, 50)
+    MainS.Visible = false; PvpS.Visible = false; HubS.Visible = false
+    MainBtn.BackgroundColor3 = Color3.fromRGB(30, 0, 50); PvpTabBtn.BackgroundColor3 = Color3.fromRGB(30, 0, 50); HubBtn.BackgroundColor3 = Color3.fromRGB(30, 0, 50)
     tab.Visible = true; btn.BackgroundColor3 = Color3.fromRGB(150, 0, 255)
 end
 MainBtn.MouseButton1Down:Connect(function() ShowTab(MainS, MainBtn) end)
-FeBtn.MouseButton1Down:Connect(function() ShowTab(FeS, FeBtn) end)
+PvpTabBtn.MouseButton1Down:Connect(function() ShowTab(PvpS, PvpTabBtn) end)
 HubBtn.MouseButton1Down:Connect(function() ShowTab(HubS, HubBtn) end)
 
 -- РУХ ГУІ
