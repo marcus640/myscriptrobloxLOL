@@ -85,7 +85,7 @@ local function CreateTabBtn(text, pos, width)
 end
 
 local MainBtn = CreateTabBtn("MAIN", 0, 0.33)
-local PvpTabBtn = CreateTabBtn("PVP", 0.33, 0.33) -- Вкладка називається PVP
+local FeTabBtn = CreateTabBtn("FE", 0.33, 0.33) -- Вкладка тепер називається FE
 local HubBtn = CreateTabBtn("HUBS", 0.66, 0.34)
 
 local function CreateScroll()
@@ -98,7 +98,7 @@ local function CreateScroll()
     return s
 end
 
-local MainS = CreateScroll(); local PvpS = CreateScroll(); local HubS = CreateScroll()
+local MainS = CreateScroll(); local FeS = CreateScroll(); local HubS = CreateScroll()
 MainS.Visible = true; MainBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 255)
 
 local function Add(name, action, parent)
@@ -121,7 +121,16 @@ Add("INFINITE YIELD", "https://raw.githubusercontent.com/EdgeIY/infiniteyield/ma
 Add("FLY GUI V3", "https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt", MainS)
 Add("RICE ANTI-AFK", "https://raw.githubusercontent.com/KazeOnTop/Rice-Anti-Afk/main/Wind", MainS)
 
--- Нова функція: ESP (Бачити гравців)
+-- Додано: INF JUMP
+Add("INFINITE JUMP", function()
+    game:GetService("UserInputService").JumpRequest:Connect(function()
+        if LP.Character then
+            LP.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
+        end
+    end)
+    print("Inf Jump Enabled")
+end, MainS)
+
 Add("ESP PLAYERS", function()
     for _, v in pairs(game.Players:GetPlayers()) do
         if v ~= LP and v.Character then
@@ -134,7 +143,6 @@ Add("ESP PLAYERS", function()
     end
 end, MainS)
 
--- Нова функція: TP Tool (Телепорт по кліку)
 Add("TP TOOL (CLICK)", function()
     local Tool = Instance.new("Tool")
     Tool.RequiresHandle = false
@@ -148,10 +156,10 @@ Add("TP TOOL (CLICK)", function()
     end)
 end, MainS)
 
--- [[ PVP TAB (Тут скрипти для бою) ]] --
-Add("FE SCRIPT (New)", "https://pastefy.app/59mJGQGe/raw", PvpS)
-Add("ANGEL GIANT (FE)", "https://raw.githubusercontent.com/marcus640/myscriptrobloxLOL/main/theangel.txt", PvpS)
-Add("FE", "https://raw.githubusercontent.com/sinret/rbxscript.com-scripts-reuploads-/main/gale", PvpS) -- Ця кнопка називається FE
+-- [[ FE TAB (Колишня PVP) ]] --
+Add("FE SCRIPT (New)", "https://pastefy.app/59mJGQGe/raw", FeS)
+Add("ANGEL GIANT (FE)", "https://raw.githubusercontent.com/marcus640/myscriptrobloxLOL/main/theangel.txt", FeS)
+Add("PVP", "https://raw.githubusercontent.com/sinret/rbxscript.com-scripts-reuploads-/main/gale", FeS) -- Кнопка тепер називається PVP
 
 -- [[ HUBS TAB ]] --
 Add("XVC HUB", "https://pastebin.com/raw/Piw5bqGq", HubS)
@@ -160,12 +168,12 @@ Add("BLIND SHOT HUB", "https://raw.githubusercontent.com/Synergy-Hub-Official/Sc
 
 -- ЛОГІКА ТАБІВ
 local function ShowTab(tab, btn)
-    MainS.Visible = false; PvpS.Visible = false; HubS.Visible = false
-    MainBtn.BackgroundColor3 = Color3.fromRGB(30, 0, 50); PvpTabBtn.BackgroundColor3 = Color3.fromRGB(30, 0, 50); HubBtn.BackgroundColor3 = Color3.fromRGB(30, 0, 50)
+    MainS.Visible = false; FeS.Visible = false; HubS.Visible = false
+    MainBtn.BackgroundColor3 = Color3.fromRGB(30, 0, 50); FeTabBtn.BackgroundColor3 = Color3.fromRGB(30, 0, 50); HubBtn.BackgroundColor3 = Color3.fromRGB(30, 0, 50)
     tab.Visible = true; btn.BackgroundColor3 = Color3.fromRGB(150, 0, 255)
 end
 MainBtn.MouseButton1Down:Connect(function() ShowTab(MainS, MainBtn) end)
-PvpTabBtn.MouseButton1Down:Connect(function() ShowTab(PvpS, PvpTabBtn) end)
+FeTabBtn.MouseButton1Down:Connect(function() ShowTab(FeS, FeTabBtn) end)
 HubBtn.MouseButton1Down:Connect(function() ShowTab(HubS, HubBtn) end)
 
 -- РУХ ГУІ
