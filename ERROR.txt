@@ -26,13 +26,11 @@ LoginTitle.BackgroundColor3 = Color3.fromRGB(80, 0, 180)
 LoginTitle.Text = "H2K4R: KEY SYSTEM"
 LoginTitle.TextColor3 = Color3.new(1, 1, 1)
 LoginTitle.Font = Enum.Font.Code
-LoginTitle.TextSize = 16
 
 local PassBox = Instance.new("TextBox", LoginFrame)
-PassBox.Size = UDim2.new(0.8, 0, 0, 35)
+PassBox.Size = UDim2.new(0.8, 0, 0, 30)
 PassBox.Position = UDim2.new(0.1, 0, 0.4, 0)
-PassBox.Text = ""
-PassBox.PlaceholderText = "Введіть пароль тут..."
+PassBox.PlaceholderText = "Password..."
 PassBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 PassBox.TextColor3 = Color3.new(1, 1, 1)
 
@@ -53,20 +51,18 @@ Frame.BorderColor3 = Color3.fromRGB(150, 0, 255)
 Frame.Visible = false 
 Frame.Active = true
 
--- КНОПКА ВІДКРИТТЯ
 local OpenBtn = Instance.new("TextButton", sg)
 OpenBtn.Size = UDim2.new(0, 70, 0, 30); OpenBtn.Position = UDim2.new(0, 10, 0.5, 0) 
 OpenBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 255); OpenBtn.Text = "H2K4R"; OpenBtn.TextColor3 = Color3.new(1, 1, 1)
-OpenBtn.Font = Enum.Font.Code; OpenBtn.BorderSizePixel = 2; OpenBtn.Visible = false
+OpenBtn.Visible = false
 
--- ЛОГІКА ПАРОЛЯ
 LoginBtn.MouseButton1Down:Connect(function()
     if PassBox.Text == PASS then
         LoginFrame:Destroy()
         OpenBtn.Visible = true
     else
         PassBox.Text = ""
-        PassBox.PlaceholderText = "НЕВІРНИЙ ПАРОЛЬ!"
+        PassBox.PlaceholderText = "WRONG!"
     end
 end)
 
@@ -75,7 +71,6 @@ Title.Size = UDim2.new(1, 0, 0, 35)
 Title.BackgroundColor3 = Color3.fromRGB(60, 0, 100)
 Title.Text = "H2K4R HUB: NEON EDITION"
 Title.TextColor3 = Color3.new(1, 1, 1)
-Title.Font = Enum.Font.Code
 
 -- [[ ТАБИ ]] --
 local function CreateTabBtn(text, pos, width)
@@ -86,12 +81,11 @@ local function CreateTabBtn(text, pos, width)
     b.BackgroundColor3 = Color3.fromRGB(30, 0, 50)
     b.TextColor3 = Color3.new(1, 1, 1)
     b.Font = Enum.Font.Code
-    b.TextSize = 10
     return b
 end
 
 local MainBtn = CreateTabBtn("MAIN", 0, 0.33)
-local PvpTabBtn = CreateTabBtn("PVP", 0.33, 0.33) -- Вкладка тепер називається PVP
+local PvpTabBtn = CreateTabBtn("PVP", 0.33, 0.33)
 local HubBtn = CreateTabBtn("HUBS", 0.66, 0.34)
 
 local function CreateScroll()
@@ -111,22 +105,22 @@ local function Add(name, url, parent)
     local b = Instance.new("TextButton", parent)
     b.Size = UDim2.new(1, -5, 0, 35); b.BackgroundColor3 = Color3.fromRGB(25, 0, 40)
     b.BorderSizePixel = 1; b.BorderColor3 = Color3.fromRGB(150, 0, 255)
-    b.Text = " " .. name; b.TextColor3 = Color3.new(1, 1, 1); b.Font = Enum.Font.Code; b.TextSize = 11
+    b.Text = " " .. name; b.TextColor3 = Color3.new(1, 1, 1); b.Font = Enum.Font.Code
     b.TextXAlignment = Enum.TextXAlignment.Left
     b.MouseButton1Down:Connect(function()
-        if type(url) == "string" then loadstring(game:HttpGet(url))() else url() end
+        loadstring(game:HttpGet(url))()
     end)
 end
 
 -- [[ MAIN ]] --
-Add("INFINITE YIELD", "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source", MainS)
-Add("ANTI-AFK", function() local vu = game:GetService("VirtualUser"); LP.Idled:Connect(function() vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame); wait(1); vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame) end) end, MainS)
-Add("INF JUMP", function() UIS.JumpRequest:Connect(function() if LP.Character then LP.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping") end end) end, MainS)
+Add("INFINITE YIELD (ADMIN)", "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source", MainS)
+Add("FLY GUI V3", "https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.lua", MainS)
+Add("INF JUMP", "https://pastebin.com/raw/706UvC9H", MainS) -- Додав робочий Inf Jump посиланням
 
--- [[ PVP TAB (Колишня FE) ]] --
+-- [[ PVP TAB ]] --
 Add("FE SCRIPT (New)", "https://pastefy.app/59mJGQGe/raw", PvpS)
 Add("ANGEL GIANT (FE)", "https://raw.githubusercontent.com/marcus640/myscriptrobloxLOL/main/theangel.txt", PvpS)
-Add("FE", "https://raw.githubusercontent.com/sinret/rbxscript.com-scripts-reuploads-/main/gale", PvpS) -- Кнопка тепер називається FE
+Add("FE", "https://raw.githubusercontent.com/sinret/rbxscript.com-scripts-reuploads-/main/gale", PvpS)
 
 -- [[ HUBS ]] --
 Add("XVC HUB", "https://pastebin.com/raw/Piw5bqGq", HubS)
