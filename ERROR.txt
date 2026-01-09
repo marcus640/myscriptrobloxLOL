@@ -81,11 +81,12 @@ local function CreateTabBtn(text, pos, width)
     b.BackgroundColor3 = Color3.fromRGB(30, 0, 50)
     b.TextColor3 = Color3.new(1, 1, 1)
     b.Font = Enum.Font.Code
+    b.TextSize = 12
     return b
 end
 
 local MainBtn = CreateTabBtn("MAIN", 0, 0.33)
-local FeTabBtn = CreateTabBtn("FE", 0.33, 0.33) -- Вкладка тепер називається FE
+local FeTabBtn = CreateTabBtn("FE", 0.33, 0.33)
 local HubBtn = CreateTabBtn("HUBS", 0.66, 0.34)
 
 local function CreateScroll()
@@ -93,7 +94,7 @@ local function CreateScroll()
     s.Size = UDim2.new(1, -10, 1, -85)
     s.Position = UDim2.new(0, 5, 0, 80)
     s.BackgroundTransparency = 1; s.Visible = false
-    s.CanvasSize = UDim2.new(0, 0, 0, 600); s.ScrollBarThickness = 3
+    s.CanvasSize = UDim2.new(0, 0, 0, 650); s.ScrollBarThickness = 3
     local l = Instance.new("UIListLayout", s); l.Padding = UDim.new(0, 5)
     return s
 end
@@ -109,59 +110,41 @@ local function Add(name, action, parent)
     b.TextXAlignment = Enum.TextXAlignment.Left
     b.MouseButton1Down:Connect(function()
         if type(action) == "string" then
-             loadstring(game:HttpGet(action))()
+             pcall(function() loadstring(game:HttpGet(action))() end)
         elseif type(action) == "function" then
-             action()
+             pcall(action)
         end
     end)
 end
 
--- [[ MAIN TAB ]] --
+-- [[ MAIN ]] --
 Add("INFINITE YIELD", "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source", MainS)
 Add("FLY GUI V3", "https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt", MainS)
 Add("RICE ANTI-AFK", "https://raw.githubusercontent.com/KazeOnTop/Rice-Anti-Afk/main/Wind", MainS)
-
--- Додано: INF JUMP
 Add("INFINITE JUMP", function()
-    game:GetService("UserInputService").JumpRequest:Connect(function()
-        if LP.Character then
-            LP.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
-        end
+    UIS.JumpRequest:Connect(function()
+        if LP.Character then LP.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping") end
     end)
-    print("Inf Jump Enabled")
 end, MainS)
-
 Add("ESP PLAYERS", function()
     for _, v in pairs(game.Players:GetPlayers()) do
-        if v ~= LP and v.Character then
-            if not v.Character:FindFirstChild("Highlight") then
-                local h = Instance.new("Highlight", v.Character)
-                h.FillColor = Color3.fromRGB(255, 0, 0)
-                h.OutlineColor = Color3.fromRGB(255, 255, 255)
-            end
+        if v ~= LP and v.Character and not v.Character:FindFirstChild("Highlight") then
+            Instance.new("Highlight", v.Character).FillColor = Color3.fromRGB(255, 0, 0)
         end
     end
 end, MainS)
-
 Add("TP TOOL (CLICK)", function()
-    local Tool = Instance.new("Tool")
-    Tool.RequiresHandle = false
-    Tool.Name = "Teleport Tool"
-    Tool.Parent = LP.Backpack
-    Tool.Activated:Connect(function()
-        local Mouse = LP:GetMouse()
-        if LP.Character then
-            LP.Character:MoveTo(Mouse.Hit.Position)
-        end
-    end)
+    local t = Instance.new("Tool")
+    t.RequiresHandle = false; t.Name = "TP Tool"; t.Parent = LP.Backpack
+    t.Activated:Connect(function() if LP.Character then LP.Character:MoveTo(LP:GetMouse().Hit.Position) end end)
 end, MainS)
 
--- [[ FE TAB (Колишня PVP) ]] --
+-- [[ FE TAB ]] --
 Add("FE SCRIPT (New)", "https://pastefy.app/59mJGQGe/raw", FeS)
 Add("ANGEL GIANT (FE)", "https://raw.githubusercontent.com/marcus640/myscriptrobloxLOL/main/theangel.txt", FeS)
-Add("PVP", "https://raw.githubusercontent.com/sinret/rbxscript.com-scripts-reuploads-/main/gale", FeS) -- Кнопка тепер називається PVP
+Add("PVP", "https://raw.githubusercontent.com/sinret/rbxscript.com-scripts-reuploads-/main/gale", FeS)
 
--- [[ HUBS TAB ]] --
+-- [[ HUBS ]] --
 Add("XVC HUB", "https://pastebin.com/raw/Piw5bqGq", HubS)
 Add("SYPCER FE HUB", "https://raw.githubusercontent.com/sypcerr/scripts/main/scripts.lua", HubS)
 Add("BLIND SHOT HUB", "https://raw.githubusercontent.com/Synergy-Hub-Official/Scripts/refs/heads/main/Games/Blind-Shot.lua", HubS)
@@ -179,8 +162,9 @@ HubBtn.MouseButton1Down:Connect(function() ShowTab(HubS, HubBtn) end)
 -- РУХ ГУІ
 local drag, dStart, sPos
 Title.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then drag = true dStart = i.Position sPos = Frame.Position end end)
-UIS.InputChanged:Connect(function(i) if drag and i.UserInputType == Enum.UserInputType.MouseMovement then local delta = i.Position - dStart
-Frame.Position = UDim2.new(sPos.X.Scale, sPos.X.Offset + delta.X, sPos.Y.Scale, sPos.Y.Offset + delta.Y) end end)
+UIS.InputChanged:Connect(function(i) if drag and i.UserInputType == Enum.UserInputType.MouseMovement then 
+    local delta = i.Position - dStart
+    Frame.Position = UDim2.new(sPos.X.Scale, sPos.X.Offset + delta.X, sPos.Y.Scale, sPos.Y.Offset + delta.Y) 
+end end)
 UIS.InputEnded:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then drag = false end end)
-
 OpenBtn.MouseButton1Down:Connect(function() Frame.Visible = not Frame.Visible end)
