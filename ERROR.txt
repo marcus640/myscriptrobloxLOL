@@ -1,6 +1,7 @@
 local LP = game:GetService("Players").LocalPlayer
 local UIS = game:GetService("UserInputService")
 local UI_NAME = "H2K4R_V14_NEON"
+local PASS = "World404"
 
 -- Очистка старого ГУІ
 pcall(function()
@@ -11,15 +12,66 @@ local sg = Instance.new("ScreenGui", LP:WaitForChild("PlayerGui"))
 sg.Name = UI_NAME
 sg.ResetOnSpawn = false
 
+-- [[ ВІКНО ПАРОЛЯ ]] --
+local LoginFrame = Instance.new("Frame", sg)
+LoginFrame.Size = UDim2.new(0, 260, 0, 140)
+LoginFrame.Position = UDim2.new(0.5, -130, 0.5, -70)
+LoginFrame.BackgroundColor3 = Color3.fromRGB(20, 0, 30)
+LoginFrame.BorderSizePixel = 2
+LoginFrame.BorderColor3 = Color3.fromRGB(150, 0, 255)
+
+local LoginTitle = Instance.new("TextLabel", LoginFrame)
+LoginTitle.Size = UDim2.new(1, 0, 0, 35)
+LoginTitle.BackgroundColor3 = Color3.fromRGB(80, 0, 180)
+LoginTitle.Text = "H2K4R: KEY SYSTEM"
+LoginTitle.TextColor3 = Color3.new(1, 1, 1)
+LoginTitle.Font = Enum.Font.Code
+LoginTitle.TextSize = 16
+
+local PassBox = Instance.new("TextBox", LoginFrame)
+PassBox.Size = UDim2.new(0.8, 0, 0, 35)
+PassBox.Position = UDim2.new(0.1, 0, 0.4, 0)
+PassBox.Text = ""
+PassBox.PlaceholderText = "Введіть пароль тут..."
+PassBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+PassBox.TextColor3 = Color3.new(1, 1, 1)
+PassBox.Font = Enum.Font.Code
+
+local LoginBtn = Instance.new("TextButton", LoginFrame)
+LoginBtn.Size = UDim2.new(0, 100, 0, 30)
+LoginBtn.Position = UDim2.new(0.5, -50, 0.75, 0)
+LoginBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 255)
+LoginBtn.Text = "LOGIN"
+LoginBtn.TextColor3 = Color3.new(1, 1, 1)
+LoginBtn.Font = Enum.Font.Code
+
 -- [[ ГОЛОВНЕ ВІКНО ]] --
 local Frame = Instance.new("Frame", sg)
 Frame.Size = UDim2.new(0, 320, 0, 420)
 Frame.Position = UDim2.new(0.5, -160, 0.5, -210)
-Frame.BackgroundColor3 = Color3.fromRGB(15, 0, 15) -- Темно-фіолетовий під твій сет
+Frame.BackgroundColor3 = Color3.fromRGB(15, 0, 15)
 Frame.BorderSizePixel = 2
-Frame.BorderColor3 = Color3.fromRGB(150, 0, 255) -- Неонова рамка
+Frame.BorderColor3 = Color3.fromRGB(150, 0, 255)
 Frame.Visible = false 
 Frame.Active = true
+
+-- КНОПКА ВІДКРИТТЯ
+local OpenBtn = Instance.new("TextButton", sg)
+OpenBtn.Size = UDim2.new(0, 70, 0, 30); OpenBtn.Position = UDim2.new(0, 10, 0.5, 0) 
+OpenBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 255); OpenBtn.Text = "H2K4R"; OpenBtn.TextColor3 = Color3.new(1, 1, 1)
+OpenBtn.Font = Enum.Font.Code; OpenBtn.BorderSizePixel = 2; OpenBtn.Visible = false
+
+-- ЛОГІКА ПАРОЛЯ
+LoginBtn.MouseButton1Down:Connect(function()
+    if PassBox.Text == PASS then
+        LoginFrame:Destroy()
+        OpenBtn.Visible = true
+        print("H2K4R Unlocked!")
+    else
+        PassBox.Text = ""
+        PassBox.PlaceholderText = "НЕВІРНИЙ ПАРОЛЬ!"
+    end
+end)
 
 -- ЗАГОЛОВОК
 local Title = Instance.new("TextButton", Frame)
@@ -52,7 +104,7 @@ local function CreateScroll()
     s.Size = UDim2.new(1, -10, 1, -85)
     s.Position = UDim2.new(0, 5, 0, 80)
     s.BackgroundTransparency = 1; s.Visible = false
-    s.CanvasSize = UDim2.new(0, 0, 0, 550); s.ScrollBarThickness = 3
+    s.CanvasSize = UDim2.new(0, 0, 0, 800); s.ScrollBarThickness = 3
     local l = Instance.new("UIListLayout", s); l.Padding = UDim.new(0, 5)
     return s
 end
@@ -67,29 +119,39 @@ local function Add(name, url, parent)
     b.Text = " " .. name; b.TextColor3 = Color3.new(1, 1, 1); b.Font = Enum.Font.Code; b.TextSize = 11
     b.TextXAlignment = Enum.TextXAlignment.Left
     b.MouseButton1Down:Connect(function()
-        if type(url) == "string" then loadstring(game:HttpGet(url))() else url() end
+        if type(url) == "string" then 
+            local success, err = pcall(function() loadstring(game:HttpGet(url))() end)
+            if not success then warn("Script failed to load: "..name) end
+        else 
+            url() 
+        end
     end)
 end
 
 -- [[ MAIN ]] --
 Add("INFINITE YIELD", "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source", MainS)
-Add("ANTI-AFK", function() local vu = game:GetService("VirtualUser"); game:GetService("Players").LocalPlayer.Idled:Connect(function() vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame); wait(1); vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame) end) end, MainS)
+Add("ANTI-AFK", function() local vu = game:GetService("VirtualUser"); LP.Idled:Connect(function() vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame); wait(1); vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame) end) end, MainS)
 Add("INF JUMP", function() UIS.JumpRequest:Connect(function() if LP.Character then LP.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping") end end) end, MainS)
+Add("FLY (Press E)", "https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.lua", MainS)
+Add("NOCLIP (Press B)", function() local ncl = true; game:GetService("RunService").Stepped:Connect(function() if ncl then for _,v in pairs(LP.Character:GetDescendants()) do if v:IsA("BasePart") then v.CanCollide = false end end end end) end, MainS)
 
--- [[ FE SCRIPTS / SWORDS ]] --
-Add("FIX ACCESSORIES (R6 FIRST)", "https://raw.githubusercontent.com/Mokiros/R6-Scripts/main/Main", FeS)
-Add("GALE FIGHTER (Neon)", "https://raw.githubusercontent.com/FilteringEnabled/GaleFighter/main/GaleFighter.lua", FeS)
-Add("SWORD GLITCHER (Gale V2)", "https://raw.githubusercontent.com/sinret/rbxscript.com-scripts-reuploads-/main/gale", FeS)
-Add("ANGEL GIANT (FE)", "https://raw.githubusercontent.com/marcus640/myscriptrobloxLOL/main/theangel.txt", FeS)
-Add("MOON CRESCENT (Big)", "https://raw.githubusercontent.com/TheNoobScript/MoonCrescent/main/Main.lua", FeS)
-Add("BRIGHTNESS (Small)", "https://raw.githubusercontent.com/Batz-z/Scripts/main/Brightness", FeS)
+-- [[ FE SCRIPTS / SWORDS - ДОДАНО БІЛЬШЕ ]] --
+Add("FIX ACCESSORIES", "https://raw.githubusercontent.com/Mokiros/R6-Scripts/main/Main", FeS)
+Add("GALE FIGHTER", "https://raw.githubusercontent.com/FilteringEnabled/GaleFighter/main/GaleFighter.lua", FeS)
+Add("SWORD GLITCHER", "https://raw.githubusercontent.com/sinret/rbxscript.com-scripts-reuploads-/main/gale", FeS)
+Add("ANGEL GIANT", "https://raw.githubusercontent.com/marcus640/myscriptrobloxLOL/main/theangel.txt", FeS)
+Add("MOON CRESCENT", "https://raw.githubusercontent.com/TheNoobScript/MoonCrescent/main/Main.lua", FeS)
+Add("UTG V2 (FE)", "https://raw.githubusercontent.com/DizzyIsKewl/Scripts/main/UTG%20V2", FeS)
+Add("NEBULA HUB", "https://raw.githubusercontent.com/CodX-Scripts/Nebula-Hub/main/Nebula", FeS)
+Add("FE KILLER (R6)", "https://pastebin.com/raw/766Ym6Xv", FeS)
+Add("REANIMATION", "https://raw.githubusercontent.com/Mokiros/R6-Scripts/main/UniversalReanimation", FeS)
 
 -- [[ HUBS ]] --
-Add("XVC HUB (Working)", "https://pastebin.com/raw/Piw5bqGq", HubS)
+Add("XVC HUB", "https://pastebin.com/raw/Piw5bqGq", HubS)
 Add("SYPCER FE HUB", "https://raw.githubusercontent.com/sypcerr/scripts/main/scripts.lua", HubS)
-Add("PRISON LIFE ADMIN", "https://raw.githubusercontent.com/ToraIsMe/ToraIsMe/main/0PrisonLife", HubS)
+Add("VONDY HUB", "https://raw.githubusercontent.com/VondyScripts/VondyHub/main/Loader", HubS)
 
--- [[ ЛОГІКА ТАБІВ ]] --
+-- ЛОГІКА ТАБІВ
 local function ShowTab(tab, btn)
     MainS.Visible = false; FeS.Visible = false; HubS.Visible = false
     MainBtn.BackgroundColor3 = Color3.fromRGB(30, 0, 50); FeBtn.BackgroundColor3 = Color3.fromRGB(30, 0, 50); HubBtn.BackgroundColor3 = Color3.fromRGB(30, 0, 50)
@@ -106,9 +168,4 @@ UIS.InputChanged:Connect(function(i) if drag and i.UserInputType == Enum.UserInp
 Frame.Position = UDim2.new(sPos.X.Scale, sPos.X.Offset + delta.X, sPos.Y.Scale, sPos.Y.Offset + delta.Y) end end)
 UIS.InputEnded:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then drag = false end end)
 
--- КНОПКА ВІДКРИТТЯ
-local OpenBtn = Instance.new("TextButton", sg)
-OpenBtn.Size = UDim2.new(0, 70, 0, 30); OpenBtn.Position = UDim2.new(0, 10, 0.5, 0) 
-OpenBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 255); OpenBtn.Text = "H2K4R"; OpenBtn.TextColor3 = Color3.new(1, 1, 1)
-OpenBtn.Font = Enum.Font.Code; OpenBtn.BorderSizePixel = 2
 OpenBtn.MouseButton1Down:Connect(function() Frame.Visible = not Frame.Visible end)
