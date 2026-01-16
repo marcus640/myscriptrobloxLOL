@@ -1,9 +1,9 @@
 local LP = game:GetService("Players").LocalPlayer
 local UIS = game:GetService("UserInputService")
-local UI_NAME = "H2K4R_V14_NEON"
+local UI_NAME = "H2K4R_V15_NEON"
 local PASS = "World404"
 
--- Очистка старого ГУІ
+-- [[ ОЧИСТКА ]] --
 pcall(function()
     if LP.PlayerGui:FindFirstChild(UI_NAME) then LP.PlayerGui[UI_NAME]:Destroy() end
 end)
@@ -94,7 +94,7 @@ local function CreateScroll()
     s.Size = UDim2.new(1, -10, 1, -85)
     s.Position = UDim2.new(0, 5, 0, 80)
     s.BackgroundTransparency = 1; s.Visible = false
-    s.CanvasSize = UDim2.new(0, 0, 0, 650); s.ScrollBarThickness = 3
+    s.CanvasSize = UDim2.new(0, 0, 0, 850); s.ScrollBarThickness = 3
     local l = Instance.new("UIListLayout", s); l.Padding = UDim.new(0, 5)
     return s
 end
@@ -117,7 +117,60 @@ local function Add(name, action, parent)
     end)
 end
 
--- [[ MAIN ]] --
+-- [[ MAIN TAB ]] --
+Add("SUPER RING V6", "https://raw.githubusercontent.com/chesslovers69/Super-ring-parts-v6/refs/heads/main/Bylukaslol", MainS)
+
+Add("X-RAY TOOL", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/ECCSco/ECCS-V3/refs/heads/main/X-Ray%20Tool.lua"))("Copyright SHON ECCS Co")
+end, MainS)
+
+Add("WALKING FLY (TOGGLE)", function()
+    -- Простий і надійний флай
+    local character = LP.Character or LP.CharacterAdded:Wait()
+    local humanoid = character:WaitForChild("Humanoid")
+    local root = character:WaitForChild("HumanoidRootPart")
+    
+    if workspace:FindFirstChild("FlyVal") then
+        workspace.FlyVal:Destroy()
+        if root:FindFirstChild("BodyVelocity") then root.BodyVelocity:Destroy() end
+        if root:FindFirstChild("BodyGyro") then root.BodyGyro:Destroy() end
+        humanoid.PlatformStand = false
+        return
+    end
+
+    local val = Instance.new("StringValue", workspace)
+    val.Name = "FlyVal"
+    
+    local bv = Instance.new("BodyVelocity", root)
+    bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+    bv.Velocity = Vector3.new(0, 0, 0)
+    
+    local bg = Instance.new("BodyGyro", root)
+    bg.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+    bg.P = 9e4
+    
+    humanoid.PlatformStand = true
+    
+    local speed = 50
+    task.spawn(function()
+        while val.Parent do
+            local cam = workspace.CurrentCamera
+            local move = Vector3.new()
+            
+            if UIS:IsKeyDown(Enum.KeyCode.W) then move = move + cam.CFrame.LookVector end
+            if UIS:IsKeyDown(Enum.KeyCode.S) then move = move - cam.CFrame.LookVector end
+            if UIS:IsKeyDown(Enum.KeyCode.A) then move = move - cam.CFrame.RightVector end
+            if UIS:IsKeyDown(Enum.KeyCode.D) then move = move + cam.CFrame.RightVector end
+            if UIS:IsKeyDown(Enum.KeyCode.Space) then move = move + Vector3.new(0, 1, 0) end
+            if UIS:IsKeyDown(Enum.KeyCode.LeftControl) then move = move - Vector3.new(0, 1, 0) end
+            
+            bv.Velocity = move * speed
+            bg.CFrame = cam.CFrame
+            task.wait()
+        end
+    end)
+end, MainS)
+
 Add("INFINITE YIELD", "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source", MainS)
 Add("FLY GUI V3", "https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt", MainS)
 Add("RICE ANTI-AFK", "https://raw.githubusercontent.com/KazeOnTop/Rice-Anti-Afk/main/Wind", MainS)
@@ -133,21 +186,14 @@ Add("ESP PLAYERS", function()
         end
     end
 end, MainS)
-Add("TP TOOL (CLICK)", function()
-    local t = Instance.new("Tool")
-    t.RequiresHandle = false; t.Name = "TP Tool"; t.Parent = LP.Backpack
-    t.Activated:Connect(function() if LP.Character then LP.Character:MoveTo(LP:GetMouse().Hit.Position) end end)
-end, MainS)
 
 -- [[ FE TAB ]] --
+Add("PVP (Gale Fighter)", "https://raw.githubusercontent.com/sinret/rbxscript.com-scripts-reuploads-/main/gale", FeS)
 Add("FE SCRIPT (New)", "https://pastefy.app/59mJGQGe/raw", FeS)
-Add("ANGEL GIANT (FE)", "https://raw.githubusercontent.com/marcus640/myscriptrobloxLOL/main/theangel.txt", FeS)
-Add("PVP", "https://raw.githubusercontent.com/sinret/rbxscript.com-scripts-reuploads-/main/gale", FeS)
 
--- [[ HUBS ]] --
+-- [[ HUBS TAB ]] --
 Add("XVC HUB", "https://pastebin.com/raw/Piw5bqGq", HubS)
-Add("SYPCER FE HUB", "https://raw.githubusercontent.com/sypcerr/scripts/main/scripts.lua", HubS)
-Add("BLIND SHOT HUB", "https://raw.githubusercontent.com/Synergy-Hub-Official/Scripts/refs/heads/main/Games/Blind-Shot.lua", HubS)
+Add("COOLCLAN HUB", "https://raw.githubusercontent.com/cfsmi2/c00lguiv1/refs/heads/main/Main.lua", HubS)
 
 -- ЛОГІКА ТАБІВ
 local function ShowTab(tab, btn)
