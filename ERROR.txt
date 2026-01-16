@@ -1,9 +1,10 @@
 local LP = game:GetService("Players").LocalPlayer
 local UIS = game:GetService("UserInputService")
-local UI_NAME = "H2K4R_V16_ROUND"
-local PASS = "World404"
+local TS = game:GetService("TweenService")
+local RS = game:GetService("RunService")
+local UI_NAME = "H2K4R_V17_PLAYER"
 
--- [[ ОЧИСТКА ]] --
+-- [[ 1. ОЧИСТКА ]] --
 pcall(function()
     if LP.PlayerGui:FindFirstChild(UI_NAME) then LP.PlayerGui[UI_NAME]:Destroy() end
 end)
@@ -12,82 +13,54 @@ local sg = Instance.new("ScreenGui", LP:WaitForChild("PlayerGui"))
 sg.Name = UI_NAME
 sg.ResetOnSpawn = false
 
--- [[ ВІКНО ПАРОЛЯ ]] --
-local LoginFrame = Instance.new("Frame", sg)
-LoginFrame.Size = UDim2.new(0, 260, 0, 140)
-LoginFrame.Position = UDim2.new(0.5, -130, 0.5, -70)
-LoginFrame.BackgroundColor3 = Color3.fromRGB(20, 0, 30)
-LoginFrame.BorderSizePixel = 2
-LoginFrame.BorderColor3 = Color3.fromRGB(150, 0, 255)
+-- [[ 2. ІНТРО (CREATOR) ]] --
+local Intro = Instance.new("TextLabel", sg)
+Intro.Size = UDim2.new(1, 0, 1, 0)
+Intro.BackgroundTransparency = 1
+Intro.Text = "Creator: maksum6863"
+Intro.TextColor3 = Color3.fromRGB(200, 160, 255) -- Світло-фіолетовий
+Intro.TextSize = 40
+Intro.Font = Enum.Font.Code
+Intro.TextTransparency = 0
 
-local LoginTitle = Instance.new("TextLabel", LoginFrame)
-LoginTitle.Size = UDim2.new(1, 0, 0, 35)
-LoginTitle.BackgroundColor3 = Color3.fromRGB(80, 0, 180)
-LoginTitle.Text = "H2K4R: KEY SYSTEM"
-LoginTitle.TextColor3 = Color3.new(1, 1, 1)
-LoginTitle.Font = Enum.Font.Code
+-- Анімація зникання
+task.spawn(function()
+    task.wait(2) -- Чекаємо 2 секунди
+    local tween = TS:Create(Intro, TweenInfo.new(3), {TextTransparency = 1})
+    tween:Play()
+    tween.Completed:Wait()
+    Intro:Destroy()
+end)
 
-local PassBox = Instance.new("TextBox", LoginFrame)
-PassBox.Size = UDim2.new(0.8, 0, 0, 30)
-PassBox.Position = UDim2.new(0.1, 0, 0.4, 0)
-PassBox.PlaceholderText = "Password..."
-PassBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-PassBox.TextColor3 = Color3.new(1, 1, 1)
-
-local LoginBtn = Instance.new("TextButton", LoginFrame)
-LoginBtn.Size = UDim2.new(0, 100, 0, 30)
-LoginBtn.Position = UDim2.new(0.5, -50, 0.75, 0)
-LoginBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 255)
-LoginBtn.Text = "LOGIN"
-LoginBtn.TextColor3 = Color3.new(1, 1, 1)
-
--- [[ КНОПКА ВІДКРИВАННЯ (ОНОВЛЕНА) ]] --
+-- [[ 3. КРУГЛА КНОПКА (DRAGGABLE) ]] --
 local OpenBtn = Instance.new("TextButton", sg)
-OpenBtn.Size = UDim2.new(0, 50, 0, 50) -- Квадратний розмір для кола
-OpenBtn.Position = UDim2.new(0, 20, 0.5, -25) -- Зліва по центру
+OpenBtn.Size = UDim2.new(0, 50, 0, 50)
+OpenBtn.Position = UDim2.new(0, 20, 0.5, -25)
 OpenBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 255)
 OpenBtn.Text = "HUB"
 OpenBtn.TextColor3 = Color3.new(1, 1, 1)
-OpenBtn.BackgroundTransparency = 0.5 -- Напівпрозора
-OpenBtn.Visible = false
+OpenBtn.BackgroundTransparency = 0.5
+OpenBtn.Visible = true
 OpenBtn.Font = Enum.Font.Code
 OpenBtn.TextSize = 14
 
--- Робимо кнопку круглою
-local BtnCorner = Instance.new("UICorner", OpenBtn)
-BtnCorner.CornerRadius = UDim.new(1, 0) -- 100% закруглення = коло
+local BtnCorner = Instance.new("UICorner", OpenBtn); BtnCorner.CornerRadius = UDim.new(1, 0)
+local BtnStroke = Instance.new("UIStroke", OpenBtn); BtnStroke.Color = Color3.fromRGB(255, 255, 255); BtnStroke.Thickness = 2; BtnStroke.Transparency = 0.5
 
--- Додаємо обводку (Stroke) для краси
-local BtnStroke = Instance.new("UIStroke", OpenBtn)
-BtnStroke.Color = Color3.fromRGB(255, 255, 255)
-BtnStroke.Thickness = 2
-BtnStroke.Transparency = 0.5
-
--- [[ ГОЛОВНЕ ВІКНО ]] --
+-- [[ 4. ГОЛОВНЕ ВІКНО ]] --
 local Frame = Instance.new("Frame", sg)
-Frame.Size = UDim2.new(0, 320, 0, 420)
-Frame.Position = UDim2.new(0.5, -160, 0.5, -210)
+Frame.Size = UDim2.new(0, 340, 0, 420)
+Frame.Position = UDim2.new(0.5, -170, 0.5, -210)
 Frame.BackgroundColor3 = Color3.fromRGB(15, 0, 15)
 Frame.BorderSizePixel = 2
 Frame.BorderColor3 = Color3.fromRGB(150, 0, 255)
 Frame.Visible = false 
 Frame.Active = true
 
--- Логіка пароля
-LoginBtn.MouseButton1Down:Connect(function()
-    if PassBox.Text == PASS then
-        LoginFrame:Destroy()
-        OpenBtn.Visible = true -- Показуємо кнопку тільки після пароля
-    else
-        PassBox.Text = ""
-        PassBox.PlaceholderText = "WRONG!"
-    end
-end)
-
 local Title = Instance.new("TextButton", Frame)
 Title.Size = UDim2.new(1, 0, 0, 35)
 Title.BackgroundColor3 = Color3.fromRGB(60, 0, 100)
-Title.Text = "H2K4R HUB: NEON EDITION"
+Title.Text = "H2K4R HUB: PLAYER EDITION"
 Title.TextColor3 = Color3.new(1, 1, 1)
 
 -- [[ ТАБИ ]] --
@@ -103,9 +76,10 @@ local function CreateTabBtn(text, pos, width)
     return b
 end
 
-local MainBtn = CreateTabBtn("MAIN", 0, 0.33)
-local FeTabBtn = CreateTabBtn("FE", 0.33, 0.33)
-local HubBtn = CreateTabBtn("HUBS", 0.66, 0.34)
+local MainBtn = CreateTabBtn("MAIN", 0, 0.25)
+local PlayerBtn = CreateTabBtn("PLAYER", 0.25, 0.25)
+local FeTabBtn = CreateTabBtn("FE", 0.50, 0.25)
+local HubBtn = CreateTabBtn("HUBS", 0.75, 0.25)
 
 local function CreateScroll()
     local s = Instance.new("ScrollingFrame", Frame)
@@ -117,7 +91,7 @@ local function CreateScroll()
     return s
 end
 
-local MainS = CreateScroll(); local FeS = CreateScroll(); local HubS = CreateScroll()
+local MainS = CreateScroll(); local PlayerS = CreateScroll(); local FeS = CreateScroll(); local HubS = CreateScroll()
 MainS.Visible = true; MainBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 255)
 
 local function Add(name, action, parent)
@@ -127,104 +101,172 @@ local function Add(name, action, parent)
     b.Text = " " .. name; b.TextColor3 = Color3.new(1, 1, 1); b.Font = Enum.Font.Code
     b.TextXAlignment = Enum.TextXAlignment.Left
     b.MouseButton1Down:Connect(function()
-        if type(action) == "string" then
-             pcall(function() loadstring(game:HttpGet(action))() end)
-        elseif type(action) == "function" then
-             pcall(action)
-        end
+        if type(action) == "string" then pcall(function() loadstring(game:HttpGet(action))() end)
+        elseif type(action) == "function" then pcall(action) end
     end)
 end
 
--- [[ MAIN TAB ]] --
-Add("SUPER RING V6", "https://raw.githubusercontent.com/chesslovers69/Super-ring-parts-v6/refs/heads/main/Bylukaslol", MainS)
-
-Add("X-RAY TOOL", function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/ECCSco/ECCS-V3/refs/heads/main/X-Ray%20Tool.lua"))("Copyright SHON ECCS Co")
-end, MainS)
-
-Add("WALKING FLY (TOGGLE)", function()
-    local character = LP.Character or LP.CharacterAdded:Wait()
-    local humanoid = character:WaitForChild("Humanoid")
-    local root = character:WaitForChild("HumanoidRootPart")
+-- [[ ФУНКЦІЯ СЛАЙДЕРА ]] --
+local function AddSlider(name, min, max, default, parent, callback)
+    local bg = Instance.new("Frame", parent)
+    bg.Size = UDim2.new(1, -5, 0, 50)
+    bg.BackgroundColor3 = Color3.fromRGB(25, 0, 40)
+    bg.BorderSizePixel = 1; bg.BorderColor3 = Color3.fromRGB(150, 0, 255)
     
-    if workspace:FindFirstChild("FlyVal") then
-        workspace.FlyVal:Destroy()
-        if root:FindFirstChild("BodyVelocity") then root.BodyVelocity:Destroy() end
-        if root:FindFirstChild("BodyGyro") then root.BodyGyro:Destroy() end
-        humanoid.PlatformStand = false
-        return
+    local title = Instance.new("TextLabel", bg)
+    title.Size = UDim2.new(1, 0, 0, 20)
+    title.BackgroundTransparency = 1
+    title.Text = name .. ": " .. default
+    title.TextColor3 = Color3.new(1, 1, 1)
+    title.Font = Enum.Font.Code
+    
+    local bar = Instance.new("TextButton", bg) -- Using button for easier input
+    bar.Size = UDim2.new(0.9, 0, 0, 10)
+    bar.Position = UDim2.new(0.05, 0, 0.6, 0)
+    bar.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    bar.Text = ""; bar.AutoButtonColor = false
+    
+    local fill = Instance.new("Frame", bar)
+    fill.Size = UDim2.new((default - min)/(max - min), 0, 1, 0)
+    fill.BackgroundColor3 = Color3.fromRGB(150, 0, 255)
+    
+    local dragging = false
+    
+    local function Update(input)
+        local pos = input.Position.X
+        local relative = math.clamp((pos - bar.AbsolutePosition.X) / bar.AbsoluteSize.X, 0, 1)
+        local value = math.floor(min + (max - min) * relative)
+        fill.Size = UDim2.new(relative, 0, 1, 0)
+        title.Text = name .. ": " .. value
+        callback(value)
     end
-
-    local val = Instance.new("StringValue", workspace)
-    val.Name = "FlyVal"
     
-    local bv = Instance.new("BodyVelocity", root)
-    bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-    bv.Velocity = Vector3.new(0, 0, 0)
-    
-    local bg = Instance.new("BodyGyro", root)
-    bg.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
-    bg.P = 9e4
-    
-    humanoid.PlatformStand = true
-    
-    local speed = 50
-    task.spawn(function()
-        while val.Parent do
-            local cam = workspace.CurrentCamera
-            local move = Vector3.new()
-            
-            if UIS:IsKeyDown(Enum.KeyCode.W) then move = move + cam.CFrame.LookVector end
-            if UIS:IsKeyDown(Enum.KeyCode.S) then move = move - cam.CFrame.LookVector end
-            if UIS:IsKeyDown(Enum.KeyCode.A) then move = move - cam.CFrame.RightVector end
-            if UIS:IsKeyDown(Enum.KeyCode.D) then move = move + cam.CFrame.RightVector end
-            if UIS:IsKeyDown(Enum.KeyCode.Space) then move = move + Vector3.new(0, 1, 0) end
-            if UIS:IsKeyDown(Enum.KeyCode.LeftControl) then move = move - Vector3.new(0, 1, 0) end
-            
-            bv.Velocity = move * speed
-            bg.CFrame = cam.CFrame
-            task.wait()
+    bar.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            Update(input)
         end
     end)
-end, MainS)
+    
+    UIS.InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            Update(input)
+        end
+    end)
+    
+    UIS.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end
+    end)
+end
 
+-- [[ TAB 1: MAIN ]] --
+Add("SUPER RING V6", "https://raw.githubusercontent.com/chesslovers69/Super-ring-parts-v6/refs/heads/main/Bylukaslol", MainS)
+Add("X-RAY TOOL", function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ECCSco/ECCS-V3/refs/heads/main/X-Ray%20Tool.lua"))("Copyright SHON ECCS Co") end, MainS)
 Add("INFINITE YIELD", "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source", MainS)
 Add("FLY GUI V3", "https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt", MainS)
 Add("RICE ANTI-AFK", "https://raw.githubusercontent.com/KazeOnTop/Rice-Anti-Afk/main/Wind", MainS)
 Add("INFINITE JUMP", function()
-    UIS.JumpRequest:Connect(function()
-        if LP.Character then LP.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping") end
-    end)
+    UIS.JumpRequest:Connect(function() if LP.Character then LP.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping") end end)
 end, MainS)
 Add("ESP PLAYERS", function()
     for _, v in pairs(game.Players:GetPlayers()) do
-        if v ~= LP and v.Character and not v.Character:FindFirstChild("Highlight") then
-            Instance.new("Highlight", v.Character).FillColor = Color3.fromRGB(255, 0, 0)
-        end
+        if v ~= LP and v.Character and not v.Character:FindFirstChild("Highlight") then Instance.new("Highlight", v.Character).FillColor = Color3.fromRGB(255, 0, 0) end
     end
 end, MainS)
 
--- [[ FE TAB ]] --
+-- [[ TAB 2: PLAYER ]] --
+-- 1. Noclip
+local noclip = false
+Add("NOCLIP (Toggle)", function()
+    noclip = not noclip
+    if noclip then
+        game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync("Noclip: ON")
+    else
+        game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync("Noclip: OFF")
+    end
+end, PlayerS)
+
+RS.Stepped:Connect(function()
+    if noclip and LP.Character then
+        for _, v in pairs(LP.Character:GetDescendants()) do
+            if v:IsA("BasePart") and v.CanCollide == true then v.CanCollide = false end
+        end
+    end
+end)
+
+-- 2. Sliders
+AddSlider("WalkSpeed", 16, 200, 16, PlayerS, function(val)
+    if LP.Character and LP.Character:FindFirstChild("Humanoid") then
+        LP.Character.Humanoid.WalkSpeed = val
+    end
+end)
+
+AddSlider("JumpPower", 50, 500, 50, PlayerS, function(val)
+    if LP.Character and LP.Character:FindFirstChild("Humanoid") then
+        LP.Character.Humanoid.UseJumpPower = true
+        LP.Character.Humanoid.JumpPower = val
+    end
+end)
+
+-- 3. R6 Convert
+Add("CONVERT TO R6 (Client)", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/ImNotVer/R6-Converter/main/Script"))()
+end, PlayerS)
+
+-- 4. Animation R6 (Твої ID)
+Add("ANIMATION R6 (Fix)", function()
+    local char = LP.Character
+    if not char then return end
+    
+    local Animate = char:FindFirstChild("Animate")
+    if Animate then
+        -- Вимикаємо старі анімації
+        Animate.Disabled = true
+        task.wait(0.1)
+        
+        -- Встановлюємо твої ID
+        if Animate:FindFirstChild("walk") then Animate.walk.WalkAnim.AnimationId = "rbxassetid://89310187408798" end
+        if Animate:FindFirstChild("run") then Animate.run.RunAnim.AnimationId = "rbxassetid://102389851866823" end
+        if Animate:FindFirstChild("idle") then 
+            if Animate.idle:FindFirstChild("Animation1") then Animate.idle.Animation1.AnimationId = "rbxassetid://74254113937732" end
+            if Animate.idle:FindFirstChild("Animation2") then Animate.idle.Animation2.AnimationId = "rbxassetid://74254113937732" end
+        end
+        if Animate:FindFirstChild("jump") then Animate.jump.JumpAnim.AnimationId = "rbxassetid://96093759377465" end
+        
+        -- Запускаємо заново
+        Animate.Disabled = false
+    end
+    
+    -- Примусово оновлюємо Humanoid, щоб анімація змінилась
+    local hum = char:FindFirstChild("Humanoid")
+    if hum then
+        hum:ChangeState(Enum.HumanoidStateType.Landed)
+    end
+end, PlayerS)
+
+
+-- [[ TAB 3: FE ]] --
 Add("PVP (Gale Fighter)", "https://raw.githubusercontent.com/sinret/rbxscript.com-scripts-reuploads-/main/gale", FeS)
 Add("FE SCRIPT (New)", "https://pastefy.app/59mJGQGe/raw", FeS)
 
--- [[ HUBS TAB ]] --
+-- [[ TAB 4: HUBS ]] --
 Add("XVC HUB", "https://pastebin.com/raw/Piw5bqGq", HubS)
 Add("COOLCLAN HUB", "https://raw.githubusercontent.com/cfsmi2/c00lguiv1/refs/heads/main/Main.lua", HubS)
 
--- ЛОГІКА ТАБІВ
+-- [[ ЛОГІКА ІНТЕРФЕЙСУ ]] --
 local function ShowTab(tab, btn)
-    MainS.Visible = false; FeS.Visible = false; HubS.Visible = false
-    MainBtn.BackgroundColor3 = Color3.fromRGB(30, 0, 50); FeTabBtn.BackgroundColor3 = Color3.fromRGB(30, 0, 50); HubBtn.BackgroundColor3 = Color3.fromRGB(30, 0, 50)
+    MainS.Visible = false; PlayerS.Visible = false; FeS.Visible = false; HubS.Visible = false
+    MainBtn.BackgroundColor3 = Color3.fromRGB(30, 0, 50); PlayerBtn.BackgroundColor3 = Color3.fromRGB(30, 0, 50)
+    FeTabBtn.BackgroundColor3 = Color3.fromRGB(30, 0, 50); HubBtn.BackgroundColor3 = Color3.fromRGB(30, 0, 50)
     tab.Visible = true; btn.BackgroundColor3 = Color3.fromRGB(150, 0, 255)
 end
+
 MainBtn.MouseButton1Down:Connect(function() ShowTab(MainS, MainBtn) end)
+PlayerBtn.MouseButton1Down:Connect(function() ShowTab(PlayerS, PlayerBtn) end)
 FeTabBtn.MouseButton1Down:Connect(function() ShowTab(FeS, FeTabBtn) end)
 HubBtn.MouseButton1Down:Connect(function() ShowTab(HubS, HubBtn) end)
 
--- [[ DRAG LOGIC (Кнопка + Меню) ]] --
-
--- 1. Рух Головного Меню
+-- DRAG: Головне меню
 local drag, dStart, sPos
 Title.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then drag = true dStart = i.Position sPos = Frame.Position end end)
 UIS.InputChanged:Connect(function(i) if drag and i.UserInputType == Enum.UserInputType.MouseMovement then 
@@ -233,30 +275,13 @@ UIS.InputChanged:Connect(function(i) if drag and i.UserInputType == Enum.UserInp
 end end)
 UIS.InputEnded:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then drag = false end end)
 
--- 2. Рух Кнопки Відкривання (Круглої)
+-- DRAG: Кнопка
 local btnDrag, btnStart, btnPos
-OpenBtn.InputBegan:Connect(function(i)
-    if i.UserInputType == Enum.UserInputType.MouseButton1 then
-        btnDrag = true
-        btnStart = i.Position
-        btnPos = OpenBtn.Position
-    end
-end)
+OpenBtn.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then btnDrag = true btnStart = i.Position btnPos = OpenBtn.Position end end)
+UIS.InputChanged:Connect(function(i) if btnDrag and i.UserInputType == Enum.UserInputType.MouseMovement then
+    local delta = i.Position - btnStart
+    OpenBtn.Position = UDim2.new(btnPos.X.Scale, btnPos.X.Offset + delta.X, btnPos.Y.Scale, btnPos.Y.Offset + delta.Y)
+end end)
+UIS.InputEnded:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then btnDrag = false end end)
 
-UIS.InputChanged:Connect(function(i)
-    if btnDrag and i.UserInputType == Enum.UserInputType.MouseMovement then
-        local delta = i.Position - btnStart
-        OpenBtn.Position = UDim2.new(btnPos.X.Scale, btnPos.X.Offset + delta.X, btnPos.Y.Scale, btnPos.Y.Offset + delta.Y)
-    end
-end)
-
-UIS.InputEnded:Connect(function(i)
-    if i.UserInputType == Enum.UserInputType.MouseButton1 then
-        btnDrag = false
-    end
-end)
-
--- Відкривання меню при кліку (якщо не тягнеш)
-OpenBtn.MouseButton1Click:Connect(function()
-    Frame.Visible = not Frame.Visible
-end)
+OpenBtn.MouseButton1Click:Connect(function() Frame.Visible = not Frame.Visible end)
