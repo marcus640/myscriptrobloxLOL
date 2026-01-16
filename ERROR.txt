@@ -1,6 +1,6 @@
 local LP = game:GetService("Players").LocalPlayer
 local UIS = game:GetService("UserInputService")
-local UI_NAME = "H2K4R_V15_NEON"
+local UI_NAME = "H2K4R_V16_ROUND"
 local PASS = "World404"
 
 -- [[ ОЧИСТКА ]] --
@@ -41,6 +41,28 @@ LoginBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 255)
 LoginBtn.Text = "LOGIN"
 LoginBtn.TextColor3 = Color3.new(1, 1, 1)
 
+-- [[ КНОПКА ВІДКРИВАННЯ (ОНОВЛЕНА) ]] --
+local OpenBtn = Instance.new("TextButton", sg)
+OpenBtn.Size = UDim2.new(0, 50, 0, 50) -- Квадратний розмір для кола
+OpenBtn.Position = UDim2.new(0, 20, 0.5, -25) -- Зліва по центру
+OpenBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 255)
+OpenBtn.Text = "HUB"
+OpenBtn.TextColor3 = Color3.new(1, 1, 1)
+OpenBtn.BackgroundTransparency = 0.5 -- Напівпрозора
+OpenBtn.Visible = false
+OpenBtn.Font = Enum.Font.Code
+OpenBtn.TextSize = 14
+
+-- Робимо кнопку круглою
+local BtnCorner = Instance.new("UICorner", OpenBtn)
+BtnCorner.CornerRadius = UDim.new(1, 0) -- 100% закруглення = коло
+
+-- Додаємо обводку (Stroke) для краси
+local BtnStroke = Instance.new("UIStroke", OpenBtn)
+BtnStroke.Color = Color3.fromRGB(255, 255, 255)
+BtnStroke.Thickness = 2
+BtnStroke.Transparency = 0.5
+
 -- [[ ГОЛОВНЕ ВІКНО ]] --
 local Frame = Instance.new("Frame", sg)
 Frame.Size = UDim2.new(0, 320, 0, 420)
@@ -51,15 +73,11 @@ Frame.BorderColor3 = Color3.fromRGB(150, 0, 255)
 Frame.Visible = false 
 Frame.Active = true
 
-local OpenBtn = Instance.new("TextButton", sg)
-OpenBtn.Size = UDim2.new(0, 70, 0, 30); OpenBtn.Position = UDim2.new(0, 10, 0.5, 0) 
-OpenBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 255); OpenBtn.Text = "H2K4R"; OpenBtn.TextColor3 = Color3.new(1, 1, 1)
-OpenBtn.Visible = false
-
+-- Логіка пароля
 LoginBtn.MouseButton1Down:Connect(function()
     if PassBox.Text == PASS then
         LoginFrame:Destroy()
-        OpenBtn.Visible = true
+        OpenBtn.Visible = true -- Показуємо кнопку тільки після пароля
     else
         PassBox.Text = ""
         PassBox.PlaceholderText = "WRONG!"
@@ -125,7 +143,6 @@ Add("X-RAY TOOL", function()
 end, MainS)
 
 Add("WALKING FLY (TOGGLE)", function()
-    -- Простий і надійний флай
     local character = LP.Character or LP.CharacterAdded:Wait()
     local humanoid = character:WaitForChild("Humanoid")
     local root = character:WaitForChild("HumanoidRootPart")
@@ -205,7 +222,9 @@ MainBtn.MouseButton1Down:Connect(function() ShowTab(MainS, MainBtn) end)
 FeTabBtn.MouseButton1Down:Connect(function() ShowTab(FeS, FeTabBtn) end)
 HubBtn.MouseButton1Down:Connect(function() ShowTab(HubS, HubBtn) end)
 
--- РУХ ГУІ
+-- [[ DRAG LOGIC (Кнопка + Меню) ]] --
+
+-- 1. Рух Головного Меню
 local drag, dStart, sPos
 Title.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then drag = true dStart = i.Position sPos = Frame.Position end end)
 UIS.InputChanged:Connect(function(i) if drag and i.UserInputType == Enum.UserInputType.MouseMovement then 
@@ -213,4 +232,31 @@ UIS.InputChanged:Connect(function(i) if drag and i.UserInputType == Enum.UserInp
     Frame.Position = UDim2.new(sPos.X.Scale, sPos.X.Offset + delta.X, sPos.Y.Scale, sPos.Y.Offset + delta.Y) 
 end end)
 UIS.InputEnded:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then drag = false end end)
-OpenBtn.MouseButton1Down:Connect(function() Frame.Visible = not Frame.Visible end)
+
+-- 2. Рух Кнопки Відкривання (Круглої)
+local btnDrag, btnStart, btnPos
+OpenBtn.InputBegan:Connect(function(i)
+    if i.UserInputType == Enum.UserInputType.MouseButton1 then
+        btnDrag = true
+        btnStart = i.Position
+        btnPos = OpenBtn.Position
+    end
+end)
+
+UIS.InputChanged:Connect(function(i)
+    if btnDrag and i.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = i.Position - btnStart
+        OpenBtn.Position = UDim2.new(btnPos.X.Scale, btnPos.X.Offset + delta.X, btnPos.Y.Scale, btnPos.Y.Offset + delta.Y)
+    end
+end)
+
+UIS.InputEnded:Connect(function(i)
+    if i.UserInputType == Enum.UserInputType.MouseButton1 then
+        btnDrag = false
+    end
+end)
+
+-- Відкривання меню при кліку (якщо не тягнеш)
+OpenBtn.MouseButton1Click:Connect(function()
+    Frame.Visible = not Frame.Visible
+end)
