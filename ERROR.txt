@@ -13,66 +13,12 @@ local sg = Instance.new("ScreenGui", LP:WaitForChild("PlayerGui"))
 sg.Name = UI_NAME
 sg.ResetOnSpawn = false
 
--- [[ ФУНКЦІЯ НЕОНОВОГО КONTУРУ (ЛІНІЯ, ЩО РУХАЄТЬСЯ) ]] --
-local function ApplyNeonBorder(instance)
-    local stroke = Instance.new("UIStroke", instance)
-    stroke.Thickness = 2
-    stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    
-    local gradient = Instance.new("UIGradient", stroke)
-    gradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(150, 0, 255)),   -- Фіолетовий
-        ColorSequenceKeypoint.new(0.25, Color3.fromRGB(255, 0, 150)), -- Маджента (неон)
-        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(20, 0, 40)),    -- Темна зона для контрасту
-        ColorSequenceKeypoint.new(0.75, Color3.fromRGB(255, 0, 150)), -- Маджента (неон)
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(150, 0, 255))    -- Фіолетовий
-    })
-    
-    -- Плавне обертання лінії в реальному часі
-    RS.RenderStepped:Connect(function(dt)
-        if gradient and gradient.Parent then
-            gradient.Rotation = (gradient.Rotation + 140 * dt) % 360
-        end
-    end)
-end
-
--- [[ ФУНКЦІЯ ПЕРЕЛИВАННЯ БЛИСКОМ (SHIMMER EFFECT) ]] --
-local function AddShimmerEffect(btn)
-    btn.ClipsDescendants = true -- Щоб блиск не виходив за межі кнопки
-    
-    local shine = Instance.new("Frame", btn)
-    shine.Size = UDim2.new(0, 50, 2, 0)
-    shine.Position = UDim2.new(-2, 0, -0.5, 0)
-    shine.Rotation = 30
-    shine.BackgroundColor3 = Color3.new(1, 1, 1)
-    shine.BorderSizePixel = 0
-    
-    local gradient = Instance.new("UIGradient", shine)
-    gradient.Color = ColorSequence.new(Color3.new(1, 1, 1))
-    gradient.Transparency = NumberSequence.new({
-        NumberSequenceKeypoint.new(0, 1),
-        NumberSequenceKeypoint.new(0.5, 0.4), -- Максимальна яскравість по центру лінзи
-        NumberSequenceKeypoint.new(1, 1)
-    })
-    
-    -- Циклічний запуск анімації блиску
-    task.spawn(function()
-        while btn and btn.Parent do
-            task.wait(math.random(3, 5)) -- Випадкова пауза між переливами
-            shine.Position = UDim2.new(-1.5, 0, -0.5, 0)
-            local tween = TS:Create(shine, TweenInfo.new(1.2, Enum.EasingStyle.Linear), {Position = UDim2.new(2, 0, -0.5, 0)})
-            tween:Play()
-            tween.Completed:Wait()
-        end
-    end)
-end
-
--- [[ 2. ІНТРО ]] --
+-- [[ 2. ІНТРО (CREATOR) ]] --
 local Intro = Instance.new("TextLabel", sg)
 Intro.Size = UDim2.new(1, 0, 1, 0)
 Intro.BackgroundTransparency = 1
 Intro.Text = "Creator: maksum6863"
-Intro.TextColor3 = Color3.fromRGB(220, 180, 255)
+Intro.TextColor3 = Color3.fromRGB(200, 160, 255)
 Intro.TextSize = 40
 Intro.Font = Enum.Font.Code
 Intro.TextTransparency = 0
@@ -85,60 +31,63 @@ task.spawn(function()
     Intro:Destroy()
 end)
 
--- [[ 3. КРУГЛА КНОПКА ]] --
+-- [[ 3. КРУГЛА КНОПКА (ПО ЦЕНТРУ) ]] --
 local OpenBtn = Instance.new("TextButton", sg)
 OpenBtn.Size = UDim2.new(0, 55, 0, 55)
 OpenBtn.Position = UDim2.new(0.5, -27, 0.5, -27)
-OpenBtn.BackgroundColor3 = Color3.fromRGB(20, 0, 35)
+OpenBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 255)
 OpenBtn.Text = "H2K4R"
 OpenBtn.TextColor3 = Color3.new(1, 1, 1)
-OpenBtn.BackgroundTransparency = 0.3
+OpenBtn.BackgroundTransparency = 0.5
 OpenBtn.Font = Enum.Font.Code
-OpenBtn.TextSize = 13
+OpenBtn.TextSize = 14
 
 local BtnCorner = Instance.new("UICorner", OpenBtn); BtnCorner.CornerRadius = UDim.new(1, 0)
-ApplyNeonBorder(OpenBtn)
-AddShimmerEffect(OpenBtn)
+local BtnStroke = Instance.new("UIStroke", OpenBtn); BtnStroke.Color = Color3.fromRGB(255, 255, 255); BtnStroke.Thickness = 2; BtnStroke.Transparency = 0.5
 
 -- [[ 4. ГОЛОВНЕ ВІКНО ]] --
 local Frame = Instance.new("Frame", sg)
 Frame.Size = UDim2.new(0, 340, 0, 420)
 Frame.Position = UDim2.new(0.5, -170, 0.5, -210)
-Frame.BackgroundColor3 = Color3.fromRGB(10, 3, 15) -- Глибокий кібер-чорний
-Frame.BorderSizePixel = 0
+Frame.BackgroundColor3 = Color3.fromRGB(15, 0, 15)
+Frame.BorderSizePixel = 2
+Frame.BorderColor3 = Color3.fromRGB(150, 0, 255)
 Frame.Visible = false 
 Frame.Active = true
 
-ApplyNeonBorder(Frame)
-
 local Title = Instance.new("TextButton", Frame)
 Title.Size = UDim2.new(1, 0, 0, 35)
-Title.BackgroundColor3 = Color3.fromRGB(40, 0, 70)
+Title.BackgroundColor3 = Color3.fromRGB(60, 0, 100)
 Title.Text = "H2K4R HUB: V18.1 FIXED"
-Title.TextColor3 = Color3.fromRGB(240, 220, 255)
+Title.TextColor3 = Color3.new(1, 1, 1)
 Title.Font = Enum.Font.Code
-Title.TextSize = 13
+Title.TextSize = 14
 
--- [[ КНОПКА DISCORD ]] --
+-- [[ КНОПКА DISCORD (ЗПРАВА ЗВЕРХУ) ]] --
 local DiscordBtn = Instance.new("TextButton", Frame)
-DiscordBtn.Size = UDim2.new(0, 75, 0, 24)
-DiscordBtn.Position = UDim2.new(1, -80, 0, 5)
-DiscordBtn.BackgroundColor3 = Color3.fromRGB(88, 101, 242) -- Колір Discord
+DiscordBtn.Size = UDim2.new(0, 75, 0, 25)
+DiscordBtn.Position = UDim2.new(1, -80, 0, 5) -- Відступ 5px зверху та справа
+DiscordBtn.BackgroundColor3 = Color3.fromRGB(88, 101, 242) -- Фірмовий колір Discord (Blurple)
 DiscordBtn.Text = "Discord"
 DiscordBtn.TextColor3 = Color3.new(1, 1, 1)
 DiscordBtn.Font = Enum.Font.Code
 DiscordBtn.TextSize = 12
-DiscordBtn.ZIndex = 5
+DiscordBtn.ZIndex = 5 -- Щоб кнопка була поверх титульної панелі
 
-local DiscordCorner = Instance.new("UICorner", DiscordBtn); DiscordCorner.CornerRadius = UDim.new(0, 5)
-AddShimmerEffect(DiscordBtn)
+local DiscordCorner = Instance.new("UICorner", DiscordBtn)
+DiscordCorner.CornerRadius = UDim.new(0, 6)
 
 DiscordBtn.MouseButton1Click:Connect(function()
-    if setclipboard then setclipboard("https://discord.gg/8mXbFZWmHH")
-    elseif toclipboard then toclipboard("https://discord.gg/8mXbFZWmHH") end
+    -- Копіювання посилання в буфер обміну
+    if setclipboard then
+        setclipboard("https://discord.gg/8mXbFZWmHH")
+    elseif toclipboard then
+        toclipboard("https://discord.gg/8mXbFZWmHH")
+    end
     
+    -- Візуальний ефект успішного копіювання
     DiscordBtn.Text = "Copied!"
-    DiscordBtn.BackgroundColor3 = Color3.fromRGB(40, 170, 90)
+    DiscordBtn.BackgroundColor3 = Color3.fromRGB(57, 139, 79) -- Зелений колір
     task.wait(1.5)
     DiscordBtn.Text = "Discord"
     DiscordBtn.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
@@ -150,13 +99,10 @@ local function CreateTabBtn(text, pos, width)
     b.Size = UDim2.new(width, -4, 0, 30)
     b.Position = UDim2.new(pos, 2, 0, 40)
     b.Text = text
-    b.BackgroundColor3 = Color3.fromRGB(25, 5, 40)
-    b.TextColor3 = Color3.fromRGB(200, 200, 200)
+    b.BackgroundColor3 = Color3.fromRGB(30, 0, 50)
+    b.TextColor3 = Color3.new(1, 1, 1)
     b.Font = Enum.Font.Code
     b.TextSize = 11
-    
-    local c = Instance.new("UICorner", b); c.CornerRadius = UDim.new(0, 4)
-    AddShimmerEffect(b)
     return b
 end
 
@@ -170,38 +116,46 @@ local function CreateScroll()
     s.Size = UDim2.new(1, -10, 1, -85)
     s.Position = UDim2.new(0, 5, 0, 80)
     s.BackgroundTransparency = 1; s.Visible = false
-    s.CanvasSize = UDim2.new(0, 0, 0, 950)
-    s.ScrollBarThickness = 4
-    s.ScrollBarImageColor3 = Color3.fromRGB(150, 0, 255)
+    s.CanvasSize = UDim2.new(0, 0, 0, 1000); s.ScrollBarThickness = 3
     local l = Instance.new("UIListLayout", s); l.Padding = UDim.new(0, 5)
     return s
 end
 
 local MainS = CreateScroll(); local PlayerS = CreateScroll(); local FeS = CreateScroll(); local HubS = CreateScroll()
-MainS.Visible = true; MainBtn.BackgroundColor3 = Color3.fromRGB(120, 0, 220)
+MainS.Visible = true; MainBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 255)
 
 local function Add(name, action, parent)
     local b = Instance.new("TextButton", parent)
-    b.Size = UDim2.new(1, -5, 0, 35)
-    b.BackgroundColor3 = Color3.fromRGB(20, 5, 35)
-    b.BorderSizePixel = 0
-    b.Text = "  " .. name
-    b.TextColor3 = Color3.fromRGB(230, 220, 240)
-    b.Font = Enum.Font.Code
+    b.Size = UDim2.new(1, -5, 0, 35); b.BackgroundColor3 = Color3.fromRGB(25, 0, 40)
+    b.BorderSizePixel = 1; b.BorderColor3 = Color3.fromRGB(150, 0, 255)
+    b.Text = " " .. name; b.TextColor3 = Color3.new(1, 1, 1); b.Font = Enum.Font.Code
     b.TextXAlignment = Enum.TextXAlignment.Left
-    
-    local c = Instance.new("UICorner", b); c.CornerRadius = UDim.new(0, 5)
-    local stroke = Instance.new("UIStroke", b); stroke.Thickness = 1; stroke.Color = Color3.fromRGB(80, 0, 140)
-    
-    AddShimmerEffect(b)
-    
     b.MouseButton1Down:Connect(function()
         if type(action) == "string" then pcall(function() loadstring(game:HttpGet(action))() end)
         elseif type(action) == "function" then pcall(action) end
     end)
 end
 
--- [[ TAB 1: MAIN ]] --
+-- [[ TAB 1: MAIN (ВСЕ ПОВЕРНУТО) ]] --
+
+-- Повернена кнопка ANIMATION з перевіркою працездатності посилань
+Add("ANIMATION", function()
+    local src = ""
+    local CoreGui = game:GetService("StarterGui")
+    pcall(function() 
+        src = game:HttpGet("https://yarhm.com/scr?channel=afemmax", false)
+    end)
+    if src == "" then
+        CoreGui:SetCore("SendNotification", {
+            Title = "YARHM Outage";
+            Text = "YARHM Online is currently unavailable! Sorry for the inconvenience. Using AFEM Max Offline.";
+            Duration = 5;
+        })
+        src = game:HttpGet("https://raw.githubusercontent.com/Joystickplays/AFEM/refs/heads/main/max/afemmax.lua", false)
+    end
+    loadstring(src)()
+end, MainS)
+
 Add("SUPER RING V6", "https://raw.githubusercontent.com/chesslovers69/Super-ring-parts-v6/refs/heads/main/Bylukaslol", MainS)
 Add("X-RAY TOOL", function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ECCSco/ECCS-V3/refs/heads/main/X-Ray%20Tool.lua"))("Copyright SHON ECCS Co") end, MainS)
 Add("INFINITE YIELD", "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source", MainS)
@@ -233,17 +187,10 @@ RS.Stepped:Connect(function()
 end)
 
 local function AddSlider(name, min, max, default, parent, callback)
-    local bg = Instance.new("Frame", parent); bg.Size = UDim2.new(1, -5, 0, 45); bg.BackgroundColor3 = Color3.fromRGB(20, 5, 35); bg.BorderSizePixel = 0
-    local c = Instance.new("UICorner", bg); c.CornerRadius = UDim.new(0, 5)
-    local s = Instance.new("UIStroke", bg); s.Thickness = 1; s.Color = Color3.fromRGB(80, 0, 140)
-    
-    local title = Instance.new("TextLabel", bg); title.Size = UDim2.new(1, 0, 0, 15); title.Text = name .. ": " .. default; title.TextColor3 = Color3.new(1,1,1); title.BackgroundTransparency = 1; title.Font = Enum.Font.Code
-    local bar = Instance.new("TextButton", bg); bar.Size = UDim2.new(0.8, 0, 0, 8); bar.Position = UDim2.new(0.1, 0, 0.6, 0); bar.Text = ""; bar.BackgroundColor3 = Color3.fromRGB(40, 10, 60)
-    local barC = Instance.new("UICorner", bar); barC.CornerRadius = UDim.new(1, 0)
-    
-    local fill = Instance.new("Frame", bar); fill.Size = UDim2.new((default-min)/(max-min), 0, 1, 0); fill.BackgroundColor3 = Color3.fromRGB(180, 0, 255); fill.BorderSizePixel = 0
-    local fillC = Instance.new("UICorner", fill); fillC.CornerRadius = UDim.new(1, 0)
-    
+    local bg = Instance.new("Frame", parent); bg.Size = UDim2.new(1, -5, 0, 45); bg.BackgroundColor3 = Color3.fromRGB(25, 0, 40); bg.BorderSizePixel = 0
+    local title = Instance.new("TextLabel", bg); title.Size = UDim2.new(1, 0, 0, 15); title.Text = name .. ": " .. default; title.TextColor3 = Color3.new(1,1,1); title.BackgroundTransparency = 1
+    local bar = Instance.new("TextButton", bg); bar.Size = UDim2.new(0.8, 0, 0, 10); bar.Position = UDim2.new(0.1, 0, 0.6, 0); bar.Text = ""
+    local fill = Instance.new("Frame", bar); fill.Size = UDim2.new((default-min)/(max-min), 0, 1, 0); fill.BackgroundColor3 = Color3.fromRGB(150, 0, 255)
     bar.MouseButton1Down:Connect(function()
         local move; move = UIS.InputChanged:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.MouseMovement then
@@ -284,9 +231,9 @@ Add("COOLCLAN HUB", "https://raw.githubusercontent.com/cfsmi2/c00lguiv1/refs/hea
 -- [[ ЛОГІКА ТАБІВ ]] --
 local function ShowTab(tab, btn)
     MainS.Visible = false; PlayerS.Visible = false; FeS.Visible = false; HubS.Visible = false
-    MainBtn.BackgroundColor3 = Color3.fromRGB(25, 5, 40); PlayerBtn.BackgroundColor3 = Color3.fromRGB(25, 5, 40)
-    FeTabBtn.BackgroundColor3 = Color3.fromRGB(25, 5, 40); HubBtn.BackgroundColor3 = Color3.fromRGB(25, 5, 40)
-    tab.Visible = true; btn.BackgroundColor3 = Color3.fromRGB(120, 0, 220)
+    MainBtn.BackgroundColor3 = Color3.fromRGB(30, 0, 50); PlayerBtn.BackgroundColor3 = Color3.fromRGB(30, 0, 50)
+    FeTabBtn.BackgroundColor3 = Color3.fromRGB(30, 0, 50); HubBtn.BackgroundColor3 = Color3.fromRGB(30, 0, 50)
+    tab.Visible = true; btn.BackgroundColor3 = Color3.fromRGB(150, 0, 255)
 end
 MainBtn.MouseButton1Down:Connect(function() ShowTab(MainS, MainBtn) end)
 PlayerBtn.MouseButton1Down:Connect(function() ShowTab(PlayerS, PlayerBtn) end)
